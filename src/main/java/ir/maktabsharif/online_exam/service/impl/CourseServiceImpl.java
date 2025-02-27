@@ -92,4 +92,15 @@ public class CourseServiceImpl implements CourseService {
     public Course findDetailsOfCourse(Long courseId) {
         return courseRepository.findCourseWithDetails(courseId);
     }
+
+    @Override
+    public Course findCourseStudents(Long courseId) {
+        return courseRepository.findCourseByStudents(courseId);
+    }
+
+    @Override
+    public Course findCourseExams(Long courseId) {
+        return courseRepository.findCourseByExams(courseId);
+    }
+
 }

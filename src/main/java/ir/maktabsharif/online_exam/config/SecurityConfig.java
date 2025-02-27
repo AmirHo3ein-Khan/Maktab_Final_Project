@@ -25,11 +25,11 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/login", "/student/save", "/master/save").permitAll()
-                        .requestMatchers("/manager/**" , "/course/**").hasRole("MANAGER")
-//                        .requestMatchers("/course/**").hasAnyRole("MASTER", "STUDENT")
+                        .requestMatchers("/manager/**", "/course/**").hasRole("MANAGER")
+                        .requestMatchers("/master/**" , "/exam/**").hasRole("MASTER")
+                        .requestMatchers("/student/**").hasRole("STUDENT")
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
@@ -60,7 +60,13 @@ public class SecurityConfig {
                 .logout(logout -> logout
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/login?logout")
+                        .invalidateHttpSession(true)
+                        .clearAuthentication(true)
+                        .deleteCookies("JSESSIONID")
                         .permitAll()
+                )
+                .headers(headers -> headers
+                        .cacheControl(cache -> cache.disable()) // Disable caching
                 )
                 .userDetailsService(userDetailsService);
 

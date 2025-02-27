@@ -17,13 +17,9 @@ public class HomeController {
         return "login";
     }
 
-//    @GetMapping("/error")
-//    public String error(){
-//        return "error";
-//    }
-
     @GetMapping("/logout")
     public String logout(){
         return "login";
     }
+
 }

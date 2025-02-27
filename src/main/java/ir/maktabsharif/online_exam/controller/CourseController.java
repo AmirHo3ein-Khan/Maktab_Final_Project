@@ -6,8 +6,11 @@ import ir.maktabsharif.online_exam.service.CourseService;
 import ir.maktabsharif.online_exam.service.MasterService;
 import ir.maktabsharif.online_exam.service.StudentService;
 import ir.maktabsharif.online_exam.service.UserService;
+import jakarta.validation.Valid;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -32,7 +35,10 @@ public class CourseController {
     }
 
     @PostMapping("/save")
-    public String createCourse(CourseDto courseDto) {
+    public String createCourse(@Valid @ModelAttribute("course") CourseDto courseDto , BindingResult result) {
+        if (result.hasErrors()){
+            return "course/saveCourse";
+        }
         courseService.createCourse(courseDto);
         return "redirect:/course/save?success";
     }
@@ -60,7 +66,7 @@ public class CourseController {
     @PostMapping("/addMasterToCourse")
     public String addMasterToCourse(@RequestParam Long courseId, @RequestParam Long masterId) {
         courseService.addMasterToCourse(courseId, masterId);
-        return "redirect:/course/coursesForAddMaster";
+        return "redirect:/course/coursesForAddMaster?success";
     }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
     @GetMapping("/coursesForAddStudent")
@@ -80,7 +86,7 @@ public class CourseController {
     @PostMapping("/addStudentToCourse")
     public String addStudentToCourse(@RequestParam Long courseId, @RequestParam Long studentId) {
         courseService.addStudentToCourse(courseId, studentId);
-        return "redirect:/course/coursesForAddStudent";
+        return "redirect:/course/coursesForAddStudent?success";
     }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -103,6 +109,6 @@ public class CourseController {
     @PostMapping("/deleteStudentFromCourse")
     public String deleteStudentFromCourse(@RequestParam Long courseId, @RequestParam Long studentId) {
         courseService.deleteStudentFromCourse(courseId, studentId);
-        return "redirect:/course/coursesForDetails";
+        return "redirect:/course/coursesForDetails?success";
     }
 }

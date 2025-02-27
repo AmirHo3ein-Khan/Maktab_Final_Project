@@ -1,26 +1,30 @@
 package ir.maktabsharif.online_exam.service.impl;
 
 import ir.maktabsharif.online_exam.exception.ResourcesNotFundException;
+import ir.maktabsharif.online_exam.model.Role;
 import ir.maktabsharif.online_exam.model.User;
+import ir.maktabsharif.online_exam.model.dto.UserDto;
 import ir.maktabsharif.online_exam.model.enums.RegisterState;
 import ir.maktabsharif.online_exam.model.enums.UserType;
+import ir.maktabsharif.online_exam.repository.RoleRepository;
 import ir.maktabsharif.online_exam.repository.UserRepository;
 import ir.maktabsharif.online_exam.service.UserService;
 import ir.maktabsharif.online_exam.util.UserSpecification;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
 
-    public UserServiceImpl(UserRepository userRepository) {
+
+    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository) {
         this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
     }
 
     @Override
@@ -51,31 +55,34 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
     }
 
-    @Override
-    public void updateUser(Long id, User updatedUser) {
-        User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
-        if (user.getUserType().equals(UserType.STUDENT)) {
 
-        }
+    @Override
+    public void updateUser(Long id, UserDto updatedUser) {
+        User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
         user.setFirstName(updatedUser.getFirstName());
         user.setLastName(updatedUser.getLastName());
         user.setUsername(updatedUser.getUsername());
         user.setEmail(updatedUser.getEmail());
         user.setDob(updatedUser.getDob());
-        user.setUserType(updatedUser.getUserType());
         userRepository.save(user);
     }
+
     @Override
     public List<User> searchUsers(String keyword) {
         Specification<User> spec = UserSpecification.searchByKeyword(keyword);
         List<User> users = userRepository.findAll(spec);
         List<User> usersWithoutManager = new ArrayList<>();
         for (User user : users) {
-            if (!user.getUserType().equals(UserType.MANAGER)) {
+            if (!user.getRole().getName().equals("MANAGER")) {
                 usersWithoutManager.add(user);
             }
         }
         return usersWithoutManager;
+    }
+
+    @Override
+    public List<User> filterByRoleAndName(String roleName, String name) {
+        return userRepository.findUserByRoleAndName(roleName, name);
     }
 
 

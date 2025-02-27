@@ -53,11 +53,6 @@
             background-color: #f7f9fb; /* Lighter gray */
         }
 
-        tr:hover {
-            background-color: #3498db; /* Blue on hover */
-            color: #fff;
-            transition: background-color 0.3s ease, color 0.3s ease;
-        }
 
         .table-bordered td, .table-bordered th {
             border: 1px solid #ddd;
@@ -119,6 +114,7 @@
         <button class="btn btn-primary mt-4">Add New Course</button> <!-- Example button -->
     </form>
     <a href="/manager/panel" class="btn btn-secondary">Back to menu</a>
+    <p style="text-align: center;"><a th:href="@{/manager/panel}">Back to menu</a></p>
 
 </div>
 

@@ -3,8 +3,10 @@ package ir.maktabsharif.online_exam.controller;
 import ir.maktabsharif.online_exam.model.Student;
 import ir.maktabsharif.online_exam.model.dto.StudentDto;
 import ir.maktabsharif.online_exam.service.StudentService;
+import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,7 +32,10 @@ public class StudentController {
     }
 
     @PostMapping("/save")
-    public String saveStudent(@ModelAttribute("user") StudentDto studentDto) {
+    public String saveStudent(@Valid @ModelAttribute("student") StudentDto studentDto , BindingResult result) {
+        if (result.hasErrors()) {
+            return "student/register";
+        }
         studentService.saveStudent(studentDto);
         return "redirect:/login?success";
     }
@@ -43,10 +48,10 @@ public class StudentController {
     }
 
     @PostMapping("/edit/{id}")
-    public String updateStudent(@PathVariable Long id, @ModelAttribute("user") StudentDto studentDto) {
+    public String updateStudent(@PathVariable Long id,@Valid @ModelAttribute("user") StudentDto studentDto) {
         boolean isUpdated = studentService.updateStudent(id, studentDto);
         if (isUpdated) {
-            return "redirect:/manager";
+            return "redirect:/student/edit?success";
         }
         return "redirect:/student/edit/{id}";
     }

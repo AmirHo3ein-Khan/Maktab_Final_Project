@@ -3,6 +3,9 @@ import ir.maktabsharif.online_exam.model.base.BaseEntity;
 import ir.maktabsharif.online_exam.model.enums.RegisterState;
 import ir.maktabsharif.online_exam.model.enums.UserType;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,7 +21,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder
-@Inheritance(strategy = InheritanceType.JOINED)
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Table(name =  "users", uniqueConstraints = @UniqueConstraint(columnNames = "username"))
 public class User extends BaseEntity<Long> {
     @Column(name = "first_name")
@@ -31,7 +34,9 @@ public class User extends BaseEntity<Long> {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate dob;
     @Enumerated(EnumType.STRING)
-    private UserType userType;
-    @Enumerated(EnumType.STRING)
     private RegisterState registerState;
+    @ManyToOne
+    private Role role;
+//    private boolean enabled = false;
+//    private String verificationToken;
 }

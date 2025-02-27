@@ -1,11 +1,16 @@
 package ir.maktabsharif.online_exam.controller;
 
+import ir.maktabsharif.online_exam.model.Role;
 import ir.maktabsharif.online_exam.model.User;
+import ir.maktabsharif.online_exam.model.dto.UserDto;
 import ir.maktabsharif.online_exam.service.MasterService;
+import ir.maktabsharif.online_exam.service.RoleService;
 import ir.maktabsharif.online_exam.service.StudentService;
 import ir.maktabsharif.online_exam.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,13 +19,15 @@ import java.util.List;
 @RequestMapping("/manager")
 public class ManagerController {
     private final UserService userService;
+    private final RoleService roleService;
 
-    public ManagerController(UserService userService, StudentService studentService, MasterService masterService) {
+    public ManagerController(UserService userService, StudentService studentService, MasterService masterService, RoleService roleService) {
         this.userService = userService;
+        this.roleService = roleService;
     }
 
     @GetMapping("/panel")
-    public String home(){
+    public String home() {
         return "manager/managerPanel";
     }
 
@@ -29,6 +36,7 @@ public class ManagerController {
         userService.approveUser(id);
         return "redirect:/manager/search";
     }
+
     @PostMapping("/disapprove/{id}")
     public String disapprove(@PathVariable Long id) {
         userService.disApproveUser(id);
@@ -43,9 +51,12 @@ public class ManagerController {
     }
 
     @PostMapping("/edit/{id}")
-    public String updateUser(@PathVariable Long id, @ModelAttribute("user") User user) {
+    public String updateUser(@PathVariable Long id, @Valid @ModelAttribute("user") UserDto user , BindingResult result) {
+        if (result.hasErrors()){
+            return "manager/edit-user";
+        }
         userService.updateUser(id, user);
-        return "redirect:/manager/search";
+        return "redirect:/manager/search?success";
     }
 
     @GetMapping("/search")
@@ -53,6 +64,15 @@ public class ManagerController {
         List<User> users = userService.searchUsers(keyword);
         model.addAttribute("users", users);
         model.addAttribute("keyword", keyword);
+        return "manager/search";
+    }
+
+    @GetMapping("/filter")
+    public String searchUsers(@RequestParam(required = false) String role, @RequestParam String name, Model model) {
+        List<User> users = userService.filterByRoleAndName(role, name);
+        model.addAttribute("users", users);
+        model.addAttribute("role", roleService.findByName(role));
+        model.addAttribute("name", name);
         return "manager/search";
     }
 

@@ -53,12 +53,6 @@
             background-color: #f7f9fb; /* Lighter gray */
         }
 
-        tr:hover {
-            background-color: #fff; /* Blue on hover */
-            color: #fff;
-            transition: background-color 0.3s ease, color 0.3s ease;
-        }
-
         .table-bordered td, .table-bordered th {
             border: 1px solid #ddd;
         }
@@ -80,18 +74,17 @@
             margin-bottom: 40px; /* Increased margin for spacing */
             color: #3498db; /* Blue title */
         }
-
-        .btn-primary {
-            background-color: #3498db;
-            border-color: #3498db;
-            padding: 10px 20px;
-            font-size: 1.1rem;
-            border-radius: 5px;
-            transition: background-color 0.3s ease;
+        .success-message {
+            margin-top: 8px;
+            background-color: #4eaf62;
+            color: #ffffff;
+            padding: 5px;
+            text-align: center;
+            border-radius: 2px;
         }
 
-        .btn-primary:hover {
-            background-color: #2980b9; /* Darker blue on hover */
+        .success-message p {
+            margin: 0;
         }
     </style>
 </head>
@@ -99,6 +92,9 @@
 <div class="container py-5 table-container">
     <div class="table-title">Course List</div>
     <div class="table-responsive">
+        <div th:if="${param.success}" class="success-message">
+            <p>Course successfully added.</p>
+        </div>
         <table class="table table-bordered table-striped">
             <thead>
             <tr>
@@ -127,7 +123,7 @@
             </tr>
             </tbody>
         </table>
-        <a href="/manager/panel" class="btn btn-primary">Back to menu</a>
+        <p style="text-align: center;"><a th:href="@{/manager/panel}">Back to menu</a></p>
     </div>
 
 </div>

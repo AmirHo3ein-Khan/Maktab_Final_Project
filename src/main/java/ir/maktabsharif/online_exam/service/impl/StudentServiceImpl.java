@@ -1,10 +1,12 @@
 package ir.maktabsharif.online_exam.service.impl;
 
 import ir.maktabsharif.online_exam.exception.ResourcesNotFundException;
+import ir.maktabsharif.online_exam.model.Role;
 import ir.maktabsharif.online_exam.model.Student;
 import ir.maktabsharif.online_exam.model.dto.StudentDto;
 import ir.maktabsharif.online_exam.model.enums.RegisterState;
 import ir.maktabsharif.online_exam.model.enums.UserType;
+import ir.maktabsharif.online_exam.repository.RoleRepository;
 import ir.maktabsharif.online_exam.repository.StudentRepository;
 import ir.maktabsharif.online_exam.service.StudentService;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,15 +19,18 @@ import java.util.Optional;
 public class StudentServiceImpl implements StudentService {
 
     private final StudentRepository studentRepository;
+    private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public StudentServiceImpl(StudentRepository studentRepository, PasswordEncoder passwordEncoder) {
+    public StudentServiceImpl(StudentRepository studentRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder) {
         this.studentRepository = studentRepository;
+        this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
     @Override
     public void saveStudent(StudentDto studentDto) {
+        Role student = roleRepository.findByName("STUDENT").get();
         studentRepository.save(Student.builder()
                 .firstName(studentDto.getFirstName())
                 .lastName(studentDto.getLastName())
@@ -33,7 +38,7 @@ public class StudentServiceImpl implements StudentService {
                 .password(passwordEncoder.encode(studentDto.getPassword()))
                 .email(studentDto.getEmail())
                 .dob(studentDto.getDob())
-                .userType(UserType.STUDENT)
+                .role(student)
                 .registerState(RegisterState.WAITING)
                 .build());
     }

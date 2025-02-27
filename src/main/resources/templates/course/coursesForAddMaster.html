@@ -52,12 +52,6 @@
             background-color: #f7f9fb;
         }
 
-        tr:hover {
-            background-color: #fff;
-            color: #fff;
-            transition: background-color 0.3s ease, color 0.3s ease;
-        }
-
         .table-bordered td, .table-bordered th {
             border: 1px solid #ddd;
         }
@@ -79,12 +73,27 @@
             margin-bottom: 40px;
             color: #3498db;
         }
+        .success-message {
+            margin-top: 8px;
+            background-color: #4eaf62;
+            color: #ffffff;
+            padding: 5px;
+            text-align: center;
+            border-radius: 2px;
+        }
+
+        .success-message p {
+            margin: 0;
+        }
     </style>
 </head>
 <body>
 <div class="container py-5 table-container">
     <div class="table-title">Course List</div>
     <div class="table-responsive">
+        <div th:if="${param.success}" class="success-message">
+            <p>Course successfully added.</p>
+        </div>
         <table class="table table-bordered table-striped">
             <thead>
             <tr>
@@ -103,7 +112,6 @@
                 <td th:text="${course.courseStartedDate}"></td>
                 <td th:text="${course.courseFinishedDate}"></td>
                 <td class="actions">
-                    <!-- Approval Form -->
                     <form th:action="@{/course/{id}/addMaster(id=${course.id})}" method="get" class="d-inline">
                         <button type="submit" class="btn btn-success">
                             <i class="bi bi-check-circle"></i> Add course
@@ -113,7 +121,7 @@
             </tr>
             </tbody>
         </table>
-        <a href="/manager/panel" class="btn btn-primary">Back to menu</a>
+        <p style="text-align: center;"><a th:href="@{/manager/panel}">Back to menu</a></p>
     </div>
 
 </div>

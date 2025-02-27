@@ -1,7 +1,6 @@
 package ir.maktabsharif.online_exam.service;
 
 import ir.maktabsharif.online_exam.model.Student;
-import ir.maktabsharif.online_exam.model.dto.AddCourseToStudentDto;
 import ir.maktabsharif.online_exam.model.dto.StudentDto;
 
 import java.util.List;
