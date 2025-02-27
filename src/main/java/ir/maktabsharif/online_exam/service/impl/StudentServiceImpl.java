@@ -5,7 +5,6 @@ import ir.maktabsharif.online_exam.model.Role;
 import ir.maktabsharif.online_exam.model.Student;
 import ir.maktabsharif.online_exam.model.dto.StudentDto;
 import ir.maktabsharif.online_exam.model.enums.RegisterState;
-import ir.maktabsharif.online_exam.model.enums.UserType;
 import ir.maktabsharif.online_exam.repository.RoleRepository;
 import ir.maktabsharif.online_exam.repository.StudentRepository;
 import ir.maktabsharif.online_exam.service.StudentService;

@@ -1,11 +1,9 @@
 package ir.maktabsharif.online_exam.service.impl;
 
 import ir.maktabsharif.online_exam.exception.ResourcesNotFundException;
-import ir.maktabsharif.online_exam.model.Role;
 import ir.maktabsharif.online_exam.model.User;
 import ir.maktabsharif.online_exam.model.dto.UserDto;
 import ir.maktabsharif.online_exam.model.enums.RegisterState;
-import ir.maktabsharif.online_exam.model.enums.UserType;
 import ir.maktabsharif.online_exam.repository.RoleRepository;
 import ir.maktabsharif.online_exam.repository.UserRepository;
 import ir.maktabsharif.online_exam.service.UserService;

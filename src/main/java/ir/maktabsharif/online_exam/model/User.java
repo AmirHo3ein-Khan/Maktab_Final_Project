@@ -1,11 +1,7 @@
 package ir.maktabsharif.online_exam.model;
 import ir.maktabsharif.online_exam.model.base.BaseEntity;
 import ir.maktabsharif.online_exam.model.enums.RegisterState;
-import ir.maktabsharif.online_exam.model.enums.UserType;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

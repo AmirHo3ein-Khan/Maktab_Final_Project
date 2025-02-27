@@ -2,7 +2,6 @@ package ir.maktabsharif.online_exam.service.impl;
 
 import ir.maktabsharif.online_exam.model.Manager;
 import ir.maktabsharif.online_exam.model.Role;
-import ir.maktabsharif.online_exam.model.enums.UserType;
 import ir.maktabsharif.online_exam.repository.ManagerRepository;
 import ir.maktabsharif.online_exam.repository.RoleRepository;
 import ir.maktabsharif.online_exam.repository.UserRepository;
