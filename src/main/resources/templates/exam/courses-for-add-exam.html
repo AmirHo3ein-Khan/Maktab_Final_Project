@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Master Courses</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .table-responsive {
+            background-color: #fff;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            margin-top: 50px;
+        }
+
+        table {
+            color: #333;
+            border-collapse: separate;
+            border-spacing: 0 10px;
+            font-size: 1.1rem;
+        }
+
+        th, td {
+            padding: 20px;
+            text-align: left;
+        }
+
+        th {
+            color: #020000;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+            font-weight: bold;
+            background-color: #f0f0f0;
+        }
+
+        tr:nth-child(even) {
+            background-color: #ecf0f1;
+        }
+
+        tr:nth-child(odd) {
+            background-color: #f7f9fb;
+        }
+
+        .table-bordered td, .table-bordered th {
+            border: 1px solid #ddd;
+        }
+
+        .table-bordered td {
+            border-radius: 5px;
+        }
+
+        .table-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .table-title {
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 40px;
+            color: #d0e1f3;
+        }
+
+        .btn {
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .btn-outline-primary {
+            color: #007bff;
+            border-color: #007bff;
+        }
+
+        .btn-sm {
+            font-size: 0.875rem;
+            padding: 0.25rem 0.5rem;
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+        }
+
+        .btn-outline-primary:hover {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        .success-message {
+            margin-top: 8px;
+            background-color: #4eaf62;
+            color: #ffffff;
+            padding: 5px;
+            text-align: center;
+            border-radius: 2px;
+        }
+
+        .success-message p {
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+<div class="container py-5 table-container">
+    <div class="table-title">Course List</div>
+    <div class="table-responsive">
+        <div th:if="${param.success}" class="success-message">
+            <p>Add exam successful.</p>
+        </div>
+        <table class="table table-bordered table-striped">
+            <thead>
+            <tr>
+                <th>Title</th>
+                <th>Unit</th>
+                <th>Course Started Date</th>
+                <th>Course Finished Date</th>
+                <td>Action</td>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:if="${courses.isEmpty()}">
+                <td colspan="5" class="text-center">No courses assigned.</td>
+            </tr>
+            <tr th:each=" course : ${courses}">
+                <td th:text="${course.title}"></td>
+                <td th:text="${course.unit}"></td>
+                <td th:text="${course.courseStartedDate}"></td>
+                <td th:text="${course.courseFinishedDate}"></td>
+                <td>
+                    <form th:action="@{/exam/{courseId}/save(courseId=${course.id})}" method="get" class="d-inline">
+                        <button type="submit" class="btn btn-outline-primary btn-sm rounded-pill shadow-sm">
+                            <i class="bi bi-people-fill me-1"></i> Add exam
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <p style="text-align: center;"><a th:href="@{/master/panel}">Back to Menu</a></p>
+    </div>
+</div>
+
+</body>
+</html>
