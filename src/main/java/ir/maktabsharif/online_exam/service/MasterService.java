@@ -10,7 +10,6 @@ import java.util.List;
 
 public interface MasterService {
     void masterRegister(MasterDto masterDto);
-//    boolean verifyMaster(String token);
     boolean updateMaster(Long id , MasterDto masterDto);
     Master findById(Long id);
     List<Master> findAll();

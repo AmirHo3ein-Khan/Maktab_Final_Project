@@ -17,7 +17,8 @@ public class ManagerServiceImpl implements ManagerService {
     private final PasswordEncoder passwordEncoder;
     private final RoleRepository roleRepository;
 
-    public ManagerServiceImpl(ManagerRepository managerRepository, UserRepository userRepository, PasswordEncoder passwordEncoder, RoleRepository roleRepository) {
+    public ManagerServiceImpl(ManagerRepository managerRepository, UserRepository userRepository,
+                              PasswordEncoder passwordEncoder, RoleRepository roleRepository) {
         this.managerRepository = managerRepository;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;

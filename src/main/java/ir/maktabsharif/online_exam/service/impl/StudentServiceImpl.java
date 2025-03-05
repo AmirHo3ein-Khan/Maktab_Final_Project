@@ -1,6 +1,6 @@
 package ir.maktabsharif.online_exam.service.impl;
 
-import ir.maktabsharif.online_exam.exception.ResourcesNotFundException;
+import ir.maktabsharif.online_exam.exception.EntityNotFoundException;
 import ir.maktabsharif.online_exam.model.Role;
 import ir.maktabsharif.online_exam.model.Student;
 import ir.maktabsharif.online_exam.model.dto.StudentDto;
@@ -21,7 +21,8 @@ public class StudentServiceImpl implements StudentService {
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public StudentServiceImpl(StudentRepository studentRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder) {
+    public StudentServiceImpl(StudentRepository studentRepository,
+                              RoleRepository roleRepository, PasswordEncoder passwordEncoder) {
         this.studentRepository = studentRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
@@ -61,7 +62,7 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public Student findById(Long id) {
         return studentRepository.findById(id)
-                .orElseThrow(() -> new ResourcesNotFundException("Student not found!"));
+                .orElseThrow(() -> new EntityNotFoundException("Student not found with this id"+ id));
     }
 
 

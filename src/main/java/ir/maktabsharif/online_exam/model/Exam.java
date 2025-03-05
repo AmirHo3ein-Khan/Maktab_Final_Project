@@ -9,6 +9,8 @@ import lombok.experimental.SuperBuilder;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -16,14 +18,28 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @SuperBuilder
 public class Exam extends BaseEntity<Long> {
+
     private String title;
+
     private String description;
+
     @Column(name = "exam_time")
     private Integer examTime;
+
     @Column(name = "exam_date")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate examDate;
+
+    private Double totalScore;
+
     @ManyToOne
     @JoinColumn(name = "COURSE_ID")
     private Course course;
+
+    @ManyToOne
+    @JoinColumn(name = "MASTER_ID")
+    private Master master;
+
+    @OneToMany(mappedBy = "exam", cascade = CascadeType.ALL)
+    private List<QuestionExam> questionExams = new ArrayList<>();
 }

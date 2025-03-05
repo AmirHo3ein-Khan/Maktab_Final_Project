@@ -1,6 +1,6 @@
 package ir.maktabsharif.online_exam.service.impl;
 
-import ir.maktabsharif.online_exam.exception.ResourcesNotFundException;
+import ir.maktabsharif.online_exam.exception.EntityNotFoundException;
 import ir.maktabsharif.online_exam.model.User;
 import ir.maktabsharif.online_exam.model.dto.UserDto;
 import ir.maktabsharif.online_exam.model.enums.RegisterState;
@@ -17,23 +17,22 @@ import java.util.*;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
 
 
-    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository) {
+    public UserServiceImpl(UserRepository userRepository) {
         this.userRepository = userRepository;
-        this.roleRepository = roleRepository;
     }
 
     @Override
-    public Optional<User> findByUsername(String username) {
-        return userRepository.findByUsername(username);
+    public User findByUsername(String username) {
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with this username: " + username));
     }
 
     @Override
     public User findUserById(Long id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new ResourcesNotFundException("User not found!"));
+                .orElseThrow(() -> new EntityNotFoundException("User not found with this id: " +id));
     }
 
 

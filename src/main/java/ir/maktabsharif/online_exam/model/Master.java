@@ -14,7 +14,10 @@ import java.util.List;
 @NoArgsConstructor
 @SuperBuilder
 @PrimaryKeyJoinColumn(name="user_id", referencedColumnName = "id")
+@DiscriminatorValue("MASTER")
 public class Master extends User {
     @OneToMany(mappedBy = "master")
     private List<Course> courses = new ArrayList<>();
+    @OneToMany(mappedBy = "master")
+    private List<Exam> exams = new ArrayList<>();
 }

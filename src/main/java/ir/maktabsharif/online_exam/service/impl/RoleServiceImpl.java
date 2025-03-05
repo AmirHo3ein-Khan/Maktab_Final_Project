@@ -1,5 +1,6 @@
 package ir.maktabsharif.online_exam.service.impl;
 
+import ir.maktabsharif.online_exam.exception.EntityNotFoundException;
 import ir.maktabsharif.online_exam.model.Role;
 import ir.maktabsharif.online_exam.repository.RoleRepository;
 import ir.maktabsharif.online_exam.service.RoleService;
@@ -32,7 +33,8 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public Role findByName(String name) {
-        return roleRepository.findByName(name).get();
+        return roleRepository.findByName(name)
+                .orElseThrow(() -> new EntityNotFoundException("Role not found with this name:" + name));
     }
 
 

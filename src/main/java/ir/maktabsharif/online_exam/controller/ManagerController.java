@@ -1,6 +1,5 @@
 package ir.maktabsharif.online_exam.controller;
 
-import ir.maktabsharif.online_exam.model.Role;
 import ir.maktabsharif.online_exam.model.User;
 import ir.maktabsharif.online_exam.model.dto.UserDto;
 import ir.maktabsharif.online_exam.service.MasterService;
@@ -21,7 +20,7 @@ public class ManagerController {
     private final UserService userService;
     private final RoleService roleService;
 
-    public ManagerController(UserService userService, StudentService studentService, MasterService masterService, RoleService roleService) {
+    public ManagerController(UserService userService, RoleService roleService) {
         this.userService = userService;
         this.roleService = roleService;
     }
@@ -68,7 +67,7 @@ public class ManagerController {
     }
 
     @GetMapping("/filter")
-    public String searchUsers(@RequestParam(required = false) String role, @RequestParam String name, Model model) {
+    public String filterUsers(@RequestParam(required = false) String role, @RequestParam String name, Model model) {
         List<User> users = userService.filterByRoleAndName(role, name);
         model.addAttribute("users", users);
         model.addAttribute("role", roleService.findByName(role));

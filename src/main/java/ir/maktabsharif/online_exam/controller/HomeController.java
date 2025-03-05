@@ -22,4 +22,15 @@ public class HomeController {
         return "login";
     }
 
+    @GetMapping("/exceptionPage")
+    public String showErrorPage() {
+        return "exception-message";
+    }
+
+    @GetMapping("/registerError")
+    public String showRegisterErrorPage() {
+        return "register-error";
+    }
+
+
 }

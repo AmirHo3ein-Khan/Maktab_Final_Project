@@ -11,7 +11,7 @@
     <style>
         /* Global Styles */
         body {
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: linear-gradient(135deg, #4b6cb7, #182848);
             height: 100vh;
             display: flex;
             justify-content: center;
@@ -113,10 +113,12 @@
                     <td th:text="${student.username}"></td>
                     <td th:text="${student.email}"></td>
                     <td th:text="${student.dob}"></td>
-                    <td class="actions">
-                        <button type="submit" name="studentId" th:value="${student.id}" class="btn btn-success">
-                            <i class="fas"></i> Add to Course
-                        </button>
+                    <td class="text-center">
+                        <form th:action="@{/course/addStudentToCourse}" method="post">
+                            <input type="hidden" name="courseId" th:value="${courseId}"/>
+                            <input type="hidden" name="studentId" th:value="${student.id}"/>
+                            <button type="submit" class="btn btn-danger">Add to Course</button>
+                        </form>
                     </td>
                 </tr>
                 </tbody>

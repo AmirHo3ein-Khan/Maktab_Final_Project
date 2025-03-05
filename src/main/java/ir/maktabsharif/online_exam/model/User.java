@@ -19,6 +19,7 @@ import java.time.LocalDate;
 @SuperBuilder
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Table(name =  "users", uniqueConstraints = @UniqueConstraint(columnNames = "username"))
+@DiscriminatorColumn(name = "user_type", discriminatorType = DiscriminatorType.STRING)
 public class User extends BaseEntity<Long> {
     @Column(name = "first_name")
     private String firstName;
@@ -33,6 +34,4 @@ public class User extends BaseEntity<Long> {
     private RegisterState registerState;
     @ManyToOne
     private Role role;
-//    private boolean enabled = false;
-//    private String verificationToken;
 }

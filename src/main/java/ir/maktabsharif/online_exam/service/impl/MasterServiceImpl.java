@@ -1,6 +1,6 @@
 package ir.maktabsharif.online_exam.service.impl;
 
-import ir.maktabsharif.online_exam.exception.ResourcesNotFundException;
+import ir.maktabsharif.online_exam.exception.EntityNotFoundException;
 import ir.maktabsharif.online_exam.model.Course;
 import ir.maktabsharif.online_exam.model.Master;
 import ir.maktabsharif.online_exam.model.Role;
@@ -26,7 +26,8 @@ public class MasterServiceImpl implements MasterService {
     private final CourseRepository courseRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public MasterServiceImpl(MasterRepository masterRepository, RoleRepository roleRepository, CourseRepository courseRepository, PasswordEncoder passwordEncoder) {
+    public MasterServiceImpl(MasterRepository masterRepository, RoleRepository roleRepository,
+                             CourseRepository courseRepository, PasswordEncoder passwordEncoder) {
         this.masterRepository = masterRepository;
         this.roleRepository = roleRepository;
         this.courseRepository = courseRepository;
@@ -81,7 +82,7 @@ public class MasterServiceImpl implements MasterService {
     @Override
     public Master findById(Long id) {
         return masterRepository.findById(id)
-                .orElseThrow(() -> new ResourcesNotFundException("Master not found!"));
+                .orElseThrow(() -> new EntityNotFoundException("Master not found with this id:" + id));
     }
 
 
@@ -92,7 +93,8 @@ public class MasterServiceImpl implements MasterService {
 
     @Override
     public Master findByUsername(String username) {
-        return masterRepository.findByUsername(username);
+        return masterRepository.findByUsername(username)
+                .orElseThrow(() -> new EntityNotFoundException("Master not found with this username:" + username));
     }
 
     @Override

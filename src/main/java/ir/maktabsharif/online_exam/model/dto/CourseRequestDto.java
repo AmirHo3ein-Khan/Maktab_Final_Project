@@ -5,16 +5,13 @@ import lombok.*;
 import java.time.LocalDate;
 
 import jakarta.validation.constraints.*;
-import lombok.*;
-
-import java.time.LocalDate;
 
 @Builder
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CourseDto {
+public class CourseRequestDto {
     @NotBlank(message = "Course title cannot be empty")
     @Size(min = 3, max = 30, message = "Title must be between 3 and 30 characters")
     private String title;

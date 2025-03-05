@@ -10,7 +10,7 @@
     <style>
         /* Exciting and Bright Color Theme */
         body {
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: linear-gradient(135deg, #4b6cb7, #182848);
             height: 100vh;
             display: flex;
             justify-content: center;
@@ -102,6 +102,7 @@
     <h1>Save Exam</h1>
     <form th:action="@{/exam/save}" method="post" th:object="${exam}">
         <input type="hidden" name="courseId" th:value="${courseId}" />
+        <input type="hidden" name="masterId" th:value="${masterId}" />
         <fieldset>
             <legend>Create a Exam</legend>
 

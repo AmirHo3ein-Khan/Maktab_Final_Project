@@ -3,7 +3,6 @@ package ir.maktabsharif.online_exam.config;
 import ir.maktabsharif.online_exam.model.User;
 import ir.maktabsharif.online_exam.model.enums.RegisterState;
 import ir.maktabsharif.online_exam.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -17,10 +16,13 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    @Autowired
-    private CustomUserDetailsService userDetailsService;
-    @Autowired
-    private UserService userService;
+    private final CustomUserDetailsService userDetailsService;
+    private final UserService userService;
+
+    public SecurityConfig(CustomUserDetailsService userDetailsService, UserService userService) {
+        this.userDetailsService = userDetailsService;
+        this.userService = userService;
+    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -36,20 +38,20 @@ public class SecurityConfig {
                         .loginPage("/login")
                         .successHandler((request, response, authentication) -> {
                             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-                            User user = userService.findByUsername(userDetails.getUsername()).get();
+                            User user = userService.findByUsername(userDetails.getUsername());
                             if (authentication.getAuthorities().stream().anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_MANAGER"))) {
                                 response.sendRedirect("/manager/panel");
                             } else if (authentication.getAuthorities().stream().anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_MASTER"))) {
                                 if (user.getRegisterState().equals(RegisterState.CONFIRM)) {
                                     response.sendRedirect("/master/panel");
                                 } else {
-                                    response.sendRedirect("/error");
+                                    response.sendRedirect("/registerError");
                                 }
                             } else if (authentication.getAuthorities().stream().anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_STUDENT"))) {
                                 if (user.getRegisterState().equals(RegisterState.CONFIRM)) {
                                     response.sendRedirect("/student/panel");
                                 } else {
-                                    response.sendRedirect("/error");
+                                    response.sendRedirect("registerError");
                                 }
                             } else {
                                 response.sendRedirect("/");
@@ -64,9 +66,6 @@ public class SecurityConfig {
                         .clearAuthentication(true)
                         .deleteCookies("JSESSIONID")
                         .permitAll()
-                )
-                .headers(headers -> headers
-                        .cacheControl(cache -> cache.disable()) // Disable caching
                 )
                 .userDetailsService(userDetailsService);
 

@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public interface UserService {
     void updateUser(Long id, UserDto updatedUser);
-    Optional<User> findByUsername(String username);
+    User findByUsername(String username);
     User findUserById(Long id);
     void approveUser(Long id);
     void disApproveUser(Long id);

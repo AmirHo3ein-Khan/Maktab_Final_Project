@@ -1,18 +1,25 @@
 package ir.maktabsharif.online_exam.service;
 
 import ir.maktabsharif.online_exam.model.Course;
-import ir.maktabsharif.online_exam.model.dto.CourseDto;
+import ir.maktabsharif.online_exam.model.DescriptiveQuestion;
+import ir.maktabsharif.online_exam.model.MultipleChoiceQuestion;
+import ir.maktabsharif.online_exam.model.dto.*;
+import ir.maktabsharif.online_exam.model.dto.questiondto.DeleteQuestionFromQuestionBankDto;
 
 import java.util.List;
 
 public interface CourseService {
-    void createCourse(CourseDto courseDto);
+    void createCourse(CourseRequestDto courseRequestDto);
+    void updateCourse(Long id , CourseRequestDto courseRequestDto);
+    void updateMasterOfCourse(UpdateMasterOfCourseDto updateMasterOfCourseDto);
+    void deleteCourse(Long id);
     List<Course> findAll();
-    void addStudentToCourse(Long courseId , Long studentId);
-    void deleteStudentFromCourse(Long courseId , Long studentId);
-    void addMasterToCourse(Long courseId , Long masterId);
-    Course findDetailsOfCourse(Long courseId);
-    Course findCourseStudents(Long courseId);
-    Course findCourseExams(Long courseId);
+    void addStudentToCourse(AddStudentToCourseDto addStudentToCourseDto);
+    void deleteStudentFromCourse(DeleteStudentFromCourseDto deleteStudentFromCourseDto);
+    void addMasterToCourse(AddMasterToCourseDto addMasterToCourseDto);
+    Course findById(Long courseId);
+    List<MultipleChoiceQuestion> mcqBank(Long courseId);
+    List<DescriptiveQuestion> dqBank(Long courseId);
+    void deleteQuestionFromQuestionBank(DeleteQuestionFromQuestionBankDto dto);
 
 }

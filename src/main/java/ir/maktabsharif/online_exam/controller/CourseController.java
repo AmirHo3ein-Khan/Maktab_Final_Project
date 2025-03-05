@@ -1,13 +1,12 @@
 package ir.maktabsharif.online_exam.controller;
 
 import ir.maktabsharif.online_exam.model.Course;
-import ir.maktabsharif.online_exam.model.dto.CourseDto;
+import ir.maktabsharif.online_exam.model.dto.*;
 import ir.maktabsharif.online_exam.service.CourseService;
 import ir.maktabsharif.online_exam.service.MasterService;
 import ir.maktabsharif.online_exam.service.StudentService;
 import ir.maktabsharif.online_exam.service.UserService;
 import jakarta.validation.Valid;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -22,34 +21,64 @@ public class CourseController {
     private final MasterService masterService;
     private final StudentService studentService;
 
-    public CourseController(CourseService courseService, UserService userService, StudentService studentService, MasterService masterService, StudentService studentService1, MasterService masterService1, UserService userService1, MasterService masterService2, StudentService studentService2) {
+    public CourseController(CourseService courseService, MasterService masterService, StudentService studentService) {
         this.courseService = courseService;
-        this.masterService = masterService2;
-        this.studentService = studentService2;
+        this.masterService = masterService;
+        this.studentService = studentService;
     }
 
     @GetMapping("/save")
-    public String showRegistrationForm(Model model) {
-        model.addAttribute("course", new CourseDto());
+    public String createCourseForm(Model model) {
+        model.addAttribute("course", new CourseRequestDto());
         return "course/saveCourse";
     }
 
     @PostMapping("/save")
-    public String createCourse(@Valid @ModelAttribute("course") CourseDto courseDto , BindingResult result) {
+    public String createCourse(@Valid @ModelAttribute("course") CourseRequestDto courseRequestDto, BindingResult result) {
         if (result.hasErrors()){
             return "course/saveCourse";
         }
-        courseService.createCourse(courseDto);
+        courseService.createCourse(courseRequestDto);
         return "redirect:/course/save?success";
     }
 
-    @GetMapping("/courses")
-    public String courseList(Model model) {
-        List<Course> courses = courseService.findAll();
-        model.addAttribute("courses", courses);
-        return "course/courses";
+    @GetMapping("/edit/{id}")
+    public String updateCourseForm(@PathVariable Long id , Model model) {
+        Course course = courseService.findById(id);
+        model.addAttribute("course" , course);
+        model.addAttribute("courseId" , course.getId());
+        return "course/updateCourse";
     }
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    @PostMapping("/edit/{id}")
+    public String updateCourse(@PathVariable Long id ,@Valid @ModelAttribute("course") CourseRequestDto courseRequestDto, BindingResult result) {
+        if (result.hasErrors()){
+            return "course/updateCourse";
+        }
+        courseService.updateCourse(id , courseRequestDto);
+        return "redirect:/course/coursesForDetails?successUpdate";
+    }
+
+    //todo bug!!!!!!!!!!
+    @GetMapping("/{courseId}/editMaster")
+    public String showMastersForUpdateCourse(@PathVariable Long courseId, Model model) {
+        model.addAttribute("masters", masterService.findAll());
+        model.addAttribute("courseId", courseId);
+        return "course/mastersForUpdateCourse";
+    }
+    @PostMapping("/editMaster")
+    public String updateMasterOfCourse(@ModelAttribute UpdateMasterOfCourseDto updateMasterOfCourseDto) {
+        courseService.updateMasterOfCourse(updateMasterOfCourseDto);
+        return "redirect:/course/coursesForDetails?successUpdate";
+    }
+
+    @GetMapping("/delete/{id}")
+    public String deleteCourse(@PathVariable Long id) {
+        courseService.deleteCourse(id);
+        return "redirect:/course/coursesForDetails?successDelete";
+    }
+
+
     @GetMapping("/coursesForAddMaster")
     public String showCoursesForAddMaster(Model model) {
         model.addAttribute("courses", courseService.findAll());
@@ -64,11 +93,11 @@ public class CourseController {
     }
 
     @PostMapping("/addMasterToCourse")
-    public String addMasterToCourse(@RequestParam Long courseId, @RequestParam Long masterId) {
-        courseService.addMasterToCourse(courseId, masterId);
+    public String addMasterToCourse(@ModelAttribute AddMasterToCourseDto addMasterToCourseDto) {
+        courseService.addMasterToCourse(addMasterToCourseDto);
         return "redirect:/course/coursesForAddMaster?success";
     }
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     @GetMapping("/coursesForAddStudent")
     public String showCoursesForAddStudent(Model model) {
         model.addAttribute("courses", courseService.findAll());
@@ -84,11 +113,10 @@ public class CourseController {
     }
 
     @PostMapping("/addStudentToCourse")
-    public String addStudentToCourse(@RequestParam Long courseId, @RequestParam Long studentId) {
-        courseService.addStudentToCourse(courseId, studentId);
+    public String addStudentToCourse(@ModelAttribute AddStudentToCourseDto addStudentToCourseDto) {
+        courseService.addStudentToCourse(addStudentToCourseDto);
         return "redirect:/course/coursesForAddStudent?success";
     }
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @GetMapping("/coursesForDetails")
     public String showCourses(Model model) {
@@ -98,17 +126,16 @@ public class CourseController {
 
     @GetMapping("/{courseId}/details")
     public String showCourseDetails(@PathVariable Long courseId, Model model) {
-        Course course = courseService.findDetailsOfCourse(courseId);
+        Course course = courseService.findById(courseId);
         model.addAttribute("course", course);
         model.addAttribute("students", course.getStudents());
         model.addAttribute("master", course.getMaster());
-        model.addAttribute("courseId", courseId);
         return "course/course-details";
     }
 
     @PostMapping("/deleteStudentFromCourse")
-    public String deleteStudentFromCourse(@RequestParam Long courseId, @RequestParam Long studentId) {
-        courseService.deleteStudentFromCourse(courseId, studentId);
+    public String deleteStudentFromCourse(@ModelAttribute DeleteStudentFromCourseDto deleteStudentFromCourseDto) {
+        courseService.deleteStudentFromCourse(deleteStudentFromCourseDto);
         return "redirect:/course/coursesForDetails?success";
     }
 }

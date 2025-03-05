@@ -11,14 +11,5 @@ import java.util.List;
 
 @Repository
 public interface CourseRepository extends JpaRepository<Course, Long> {
-    @Query("SELECT c FROM Course c LEFT JOIN FETCH c.master LEFT JOIN FETCH c.students WHERE c.id = :courseId")
-    Course findCourseWithDetails(@Param("courseId") Long courseId);
-
     List<Course> findByMaster(Master master);
-
-    @Query("SELECT c FROM Course c LEFT JOIN FETCH c.students WHERE c.id = :courseId")
-    Course findCourseByStudents(@Param("courseId") Long courseId);
-
-    @Query("SELECT c FROM Course c LEFT JOIN FETCH c.exams WHERE c.id = :courseId")
-    Course findCourseByExams(@Param("courseId") Long courseId);
 }

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Error</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #4b6cb7, #182848);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .error-message {
+            border: 1px solid #dc3545;
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 20px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Access Denied</h1>
+    <div class="error-message">
+        <h4>Registration Status: Waiting</h4>
+        <p>Your registration is currently under review. Please wait until your registration is confirmed before accessing the panel.</p>
+    </div>
+    <a class="btn btn-primary" th:href="@{/}">Go to Homepage</a>
+</div>
+</body>
+</html>

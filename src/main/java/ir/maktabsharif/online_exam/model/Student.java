@@ -1,5 +1,6 @@
 package ir.maktabsharif.online_exam.model;
 
+import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.PrimaryKeyJoinColumn;
@@ -16,6 +17,7 @@ import java.util.List;
 @NoArgsConstructor
 @SuperBuilder
 @PrimaryKeyJoinColumn(name="user_id", referencedColumnName = "id")
+@DiscriminatorValue("STUDENT")
 public class Student extends User {
     @ManyToMany(mappedBy = "students")
     private List<Course> courses = new ArrayList<>();

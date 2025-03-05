@@ -44,4 +44,8 @@ public class Course extends BaseEntity<Long> {
 
     @OneToMany(mappedBy = "course")
     private List<Exam> exams = new ArrayList<>();
+
+    @OneToMany(mappedBy = "course")
+    private List<Question> questions = new ArrayList<>();
+
 }

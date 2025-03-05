@@ -1,7 +1,6 @@
 package ir.maktabsharif.online_exam.controller;
 
-import ir.maktabsharif.online_exam.model.Course;
-import ir.maktabsharif.online_exam.model.Master;
+import ir.maktabsharif.online_exam.model.*;
 import ir.maktabsharif.online_exam.model.dto.MasterDto;
 import ir.maktabsharif.online_exam.service.CourseService;
 import ir.maktabsharif.online_exam.service.MasterService;
@@ -12,7 +11,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.io.UnsupportedEncodingException;
 import java.security.Principal;
 import java.util.List;
 
@@ -48,16 +46,6 @@ public class MasterController {
         return "redirect:/login?success";
     }
 
-//    @GetMapping("/verify")
-//    public String verifyAccount(@RequestParam("token") String token, Model model) {
-//        if (masterService.verifyMaster(token)) {
-//            model.addAttribute("message", "Verification successful! You can now log in.");
-//        } else {
-//            model.addAttribute("message", "Invalid verification link.");
-//        }
-//        return "verification-result";
-//    }
-
     @GetMapping("/edit")
     public String editMasterForm(Principal principal, Model model) {
         String username = principal.getName();
@@ -91,14 +79,14 @@ public class MasterController {
 
     @GetMapping("/{courseId}/studentsCourse")
     private String courseStudents(@PathVariable Long courseId, Model model) {
-        Course course = courseService.findCourseStudents(courseId);
+        Course course = courseService.findById(courseId);
         model.addAttribute("students", course.getStudents());
         return "master/studentsOfCourse";
     }
 
     @GetMapping("/{courseId}/examsCourse")
     private String courseExams(@PathVariable Long courseId, Model model) {
-        Course course = courseService.findCourseExams(courseId);
+        Course course = courseService.findById(courseId);
         model.addAttribute("exams", course.getExams());
         return "master/examsOfCourse";
     }

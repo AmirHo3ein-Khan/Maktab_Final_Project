@@ -10,7 +10,7 @@
 
     <style>
         body {
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: linear-gradient(135deg, #4b6cb7, #182848);
             height: 100vh;
             display: flex;
             justify-content: center;
@@ -42,9 +42,6 @@
             background-color: #e9ecef;
         }
 
-        .btn-secondary {
-            margin-top: 20px;
-        }
 
         .btn-danger {
             font-size: 14px;
@@ -86,9 +83,11 @@
                 <td th:text="${student.email}"></td>
                 <td th:text="${student.dob}"></td>
                 <td class="text-center">
-                    <button type="submit" name="studentId" th:value="${student.id}" class="btn btn-danger">
-                        Remove from Course
-                    </button>
+                    <form th:action="@{/course/deleteStudentFromCourse}" method="post">
+                        <input type="hidden" name="courseId" th:value="${course.id}"/>
+                        <input type="hidden" name="studentId" th:value="${student.id}"/>
+                        <button type="submit" class="btn btn-danger">Remove from Course</button>
+                    </form>
                 </td>
             </tr>
             </tbody>
