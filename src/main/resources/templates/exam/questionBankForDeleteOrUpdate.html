@@ -166,7 +166,6 @@
                 <td colspan="5" class="text-center">No questions assigned.</td>
             </tr>
 
-            <!-- Multiple Choice Questions -->
             <tr th:each="question : ${multipleChoiceQuestions}">
                 <td><span class="badge bg-primary">Multiple Choice</span></td>
                 <td th:text="${question.title}"></td>
@@ -199,7 +198,6 @@
                 </td>
             </tr>
 
-            <!-- Descriptive Questions -->
             <tr th:each="question : ${descriptiveQuestions}">
                 <td><span class="badge bg-secondary">Descriptive</span></td>
                 <td th:text="${question.title}"></td>

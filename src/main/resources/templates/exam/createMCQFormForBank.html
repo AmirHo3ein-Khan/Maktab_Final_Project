@@ -170,10 +170,8 @@
     }
 
     function handleCheckboxChange(clickedCheckbox) {
-        // Get all checkboxes in the form
         const checkboxes = document.querySelectorAll('input[type="checkbox"]');
 
-        // If the clicked checkbox is checked, uncheck all other checkboxes
         if (clickedCheckbox.checked) {
             checkboxes.forEach(checkbox => {
                 if (checkbox !== clickedCheckbox) {

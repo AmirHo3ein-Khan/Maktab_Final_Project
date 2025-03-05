@@ -119,40 +119,33 @@
 <div class="container">
     <h2>Create Descriptive Question</h2>
 
-    <!-- Form for Creating Descriptive Question -->
     <form th:action="@{/exam/{courseId}/descriptiveQuestionForBank(courseId=${course.id})}"
           method="post" th:object="${descriptiveQuestionDto}">
 
-        <!-- Title field -->
         <div class="mb-3">
             <label for="title" class="form-label">Title</label>
             <input type="text" id="title" name="title" class="form-control" th:field="*{title}" placeholder="Enter the title of the question" required />
         </div>
 
-        <!-- Question Text field -->
         <div class="mb-3">
             <label for="questionText" class="form-label">Question Text</label>
             <textarea id="questionText" name="questionText" class="form-control" th:field="*{questionText}" placeholder="Enter the descriptive question text..." required></textarea>
         </div>
 
-        <!-- Score field -->
         <div class="mb-3">
             <label for="score" class="form-label">Score</label>
             <input type="number" id="score" name="score" class="form-control" th:field="*{score}" placeholder="Enter the score for the question" required />
         </div>
 
-        <!-- Submit button -->
         <button type="submit" class="btn btn-primary">Create Question</button>
     </form>
 
-    <!-- Success Message -->
     <div th:if="${param.success}">
         <div class="alert alert-success mt-3">
             Descriptive Question created successfully!
         </div>
     </div>
 
-    <!-- Back Button -->
     <div>
         <a th:href="@{/exam/{courseId}/questionBankForDeleteOrUpdate(courseId=${courseId})}" class="back-btn">Back to Question bank</a>
     </div>

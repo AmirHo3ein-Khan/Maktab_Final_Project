@@ -102,39 +102,32 @@
 <div class="container">
   <h2>Update Descriptive Question</h2>
 
-  <!-- Form for Updating Descriptive Question -->
   <form th:action="@{/exam/{questionId}/{courseId}/updateDescriptiveQuestion(questionId=${questionId}, courseId=${courseId})}"
         method="post" th:object="${descriptiveQuestion}">
 
-    <!-- Hidden Field for Question ID -->
     <input type="hidden" th:field="*{id}" />
 
-    <!-- Title Field -->
     <div class="mb-3">
       <label for="title" class="form-label">Title</label>
       <input type="text" id="title" name="title" class="form-control"
              th:field="*{title}" placeholder="Enter the title of the question" required />
     </div>
 
-    <!-- Question Text Field -->
     <div class="mb-3">
       <label for="questionText" class="form-label">Question Text</label>
       <textarea id="questionText" name="questionText" class="form-control"
                 th:field="*{questionText}" placeholder="Enter the descriptive question text..." required></textarea>
     </div>
 
-    <!-- Score Field -->
     <div class="mb-3">
       <label for="score" class="form-label">Score</label>
       <input type="number" id="score" name="score" class="form-control"
              th:field="*{defaultScore}" placeholder="Enter the score for the question" required />
     </div>
 
-    <!-- Submit Button -->
     <button type="submit" class="btn btn-primary">Update Question</button>
   </form>
 
-  <!-- Back Button -->
   <a th:href="@{/exam/{courseId}/questionBankForDeleteOrUpdate(courseId=${courseId})}"
      class="back-btn">Back to Exam Questions</a>
 </div>
