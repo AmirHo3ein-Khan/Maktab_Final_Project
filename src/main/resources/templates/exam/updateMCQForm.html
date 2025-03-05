@@ -140,7 +140,6 @@
 
         <h3>Options</h3>
         <div class="options-container" id="optionsContainer">
-            <!-- Loop through existing options -->
             <div th:each="option, iterStat : *{options}" class="option-item">
                 <input type="text" th:field="*{options[__${iterStat.index}__].optionText}" placeholder="Enter option text"/>
                 <input type="checkbox" th:field="*{options[__${iterStat.index}__].correct}"/> Correct
