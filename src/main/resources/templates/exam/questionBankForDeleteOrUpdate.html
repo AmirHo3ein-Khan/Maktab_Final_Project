@@ -227,19 +227,19 @@
         </table>
 
     </div>
-        <form th:action="@{/exam/{courseId}/multipleQuestionForBank(courseId=${courseId})}"
-              method="get" class="center-form">
+    <div class="d-flex justify-content-center gap-3 mt-4">
+        <form th:action="@{/exam/{courseId}/multipleQuestionForBank(courseId=${courseId})}" method="get">
             <button type="submit" class="btn btn-outline-info">
-                <i class="bi me-1"></i> Add Multiple choice question to bank
+                <i class="bi me-1"></i> Add Multiple Choice Question to Bank
             </button>
         </form>
 
-        <form th:action="@{/exam/{courseId}/descriptiveQuestionForBank(courseId=${courseId})}"
-              method="get" class="center-form">
+        <form th:action="@{/exam/{courseId}/descriptiveQuestionForBank(courseId=${courseId})}" method="get">
             <button type="submit" class="btn btn-outline-info">
-                <i class="bi me-1"></i> Add descriptive question to bank
+                <i class="bi me-1"></i> Add Descriptive Question to Bank
             </button>
         </form>
+    </div>
 
         <a th:href="@{/exam/coursesForAddQuestion}" class="back-link">← Back to questions of exam</a>
 </div>

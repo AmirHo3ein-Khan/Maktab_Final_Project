@@ -40,6 +40,6 @@ public class Exam extends BaseEntity<Long> {
     @JoinColumn(name = "MASTER_ID")
     private Master master;
 
-    @OneToMany(mappedBy = "exam", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "exam")
     private List<QuestionExam> questionExams = new ArrayList<>();
 }

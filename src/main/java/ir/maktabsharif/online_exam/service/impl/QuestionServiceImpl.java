@@ -104,7 +104,7 @@ public class QuestionServiceImpl implements QuestionService {
         examRepository.save(exam);
     }
 
-    @Override //fixme when question not add don't change the score of exam
+    @Override
     public void addQuestionToExam(AddQuestionToExamDto dto) {
         Question question = questionRepository.findById(dto.getQuestionId())
                 .orElseThrow(() -> new EntityNotFoundException("Question with this id not found: " + dto.getQuestionId()));
@@ -115,7 +115,7 @@ public class QuestionServiceImpl implements QuestionService {
         boolean questionExistsInExam = questionExamRepository.existsByExamAndQuestion(exam, question);
 
         if (questionExistsInExam) {
-            throw new QuestionAlreadyExistsInExamException("Question with id " + dto.getQuestionId() + " already exists in the exam with id " + dto.getExamId());
+            throw new QuestionAlreadyExistsInExamException("This question already added to this exam!");
         }
 
         QuestionExam questionExam = QuestionExam.builder()
@@ -146,6 +146,7 @@ public class QuestionServiceImpl implements QuestionService {
     public void deleteQuestionFromExam(DeleteQuestionFromExamDto dto) {
         Question question = questionRepository.findById(dto.getQuestionId())
                 .orElseThrow(() -> new EntityNotFoundException("Question with this id not found: " + dto.getQuestionId()));
+
         Exam exam = examRepository.findById(dto.getExamId())
                 .orElseThrow(() -> new EntityNotFoundException("Exam with this id not found: " + dto.getExamId()));
 

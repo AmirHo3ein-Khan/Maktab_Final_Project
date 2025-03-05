@@ -169,9 +169,15 @@
         newOptionDiv.innerHTML = `
             <input type="text" name="options[${optionIndex}].optionText" placeholder="Enter option text"/>
             <input type="checkbox" name="options[${optionIndex}].correct" onchange="handleCheckboxChange(this)"/> Correct
+            <button type="button" class="remove-option-btn" onclick="removeOption(this)">Remove</button>
         `;
 
         optionsContainer.appendChild(newOptionDiv);
+    }
+
+    function removeOption(button) {
+        const optionItem = button.closest('.option-item');
+        optionItem.remove();
     }
 
     function handleCheckboxChange(clickedCheckbox) {
