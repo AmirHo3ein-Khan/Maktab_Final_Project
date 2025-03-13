@@ -227,7 +227,7 @@ public class StudentController {
                 model.addAttribute("selectedOptionId", mcAnswerDto.getSelectedOptionId());
             }
             if (cachedAnswer instanceof DescriptiveAnswerDto descAnswerDto) {
-                model.addAttribute("answer", descAnswerDto.getAnswer()); // Add the answer to the model
+                model.addAttribute("answer", descAnswerDto.getAnswer());
             }
         }
 

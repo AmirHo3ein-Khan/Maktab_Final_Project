@@ -99,7 +99,6 @@
         function updateCountdown() {
             if (remainingTime <= 0) {
                 var examId = document.getElementById('examData').getAttribute('data-exam-id');
-                // Redirect to the constructed URL
                 window.location.href = '/student/' + examId + '/submitExam';
             } else {
                 var minutes = Math.floor(remainingTime / 60);
