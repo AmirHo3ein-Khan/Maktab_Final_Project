@@ -4,6 +4,7 @@ package ir.maktabsharif.online_exam.service;
 import ir.maktabsharif.online_exam.model.DescriptiveQuestion;
 import ir.maktabsharif.online_exam.model.MultipleChoiceQuestion;
 import ir.maktabsharif.online_exam.model.Question;
+import ir.maktabsharif.online_exam.model.QuestionExam;
 import ir.maktabsharif.online_exam.model.dto.questiondto.*;
 
 import java.util.List;
@@ -22,4 +23,6 @@ public interface QuestionService {
     List<Question> deletedQuestions();
     void deleteDeletedQuestionFromBank(Long questionId);
     void addDeletedQuestionFromBankToBank(Long questionId , Long courseId);
+    Question findById(Long id);
+    List<QuestionExam> findQuestionExamByExam(Long examId);
 }

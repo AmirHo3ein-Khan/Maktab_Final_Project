@@ -1,10 +1,13 @@
 package ir.maktabsharif.online_exam.service.impl;
 
 import ir.maktabsharif.online_exam.exception.EntityNotFoundException;
+import ir.maktabsharif.online_exam.model.Course;
+import ir.maktabsharif.online_exam.model.Master;
 import ir.maktabsharif.online_exam.model.Role;
 import ir.maktabsharif.online_exam.model.Student;
 import ir.maktabsharif.online_exam.model.dto.StudentDto;
 import ir.maktabsharif.online_exam.model.enums.RegisterState;
+import ir.maktabsharif.online_exam.repository.CourseRepository;
 import ir.maktabsharif.online_exam.repository.RoleRepository;
 import ir.maktabsharif.online_exam.repository.StudentRepository;
 import ir.maktabsharif.online_exam.service.StudentService;
@@ -20,12 +23,14 @@ public class StudentServiceImpl implements StudentService {
     private final StudentRepository studentRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
+    private final CourseRepository courseRepository;
 
     public StudentServiceImpl(StudentRepository studentRepository,
-                              RoleRepository roleRepository, PasswordEncoder passwordEncoder) {
+                              RoleRepository roleRepository, PasswordEncoder passwordEncoder, CourseRepository courseRepository) {
         this.studentRepository = studentRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
+        this.courseRepository = courseRepository;
     }
 
     @Override
@@ -60,6 +65,17 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
+    public boolean checkPassword(Student student, String oldPassword) {
+        return passwordEncoder.matches(oldPassword, student.getPassword());
+    }
+
+    @Override
+    public void changePassword(Student student, String newPassword) {
+        student.setPassword(passwordEncoder.encode(newPassword));
+        studentRepository.save(student);
+    }
+
+    @Override
     public Student findById(Long id) {
         return studentRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Student not found with this id"+ id));
@@ -69,5 +85,18 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public List<Student> findAll() {
         return studentRepository.findAll();
+    }
+
+    @Override
+    public List<Course> coursesOfStudent(Long studentId) {
+        Student student = studentRepository.findById(studentId)
+                .orElseThrow(() -> new EntityNotFoundException("Student not found with this id" + studentId));
+        return courseRepository.findCoursesByStudent(student);
+    }
+
+    @Override
+    public Student findByUsername(String username) {
+        return studentRepository.findByUsername(username)
+                .orElseThrow(() -> new EntityNotFoundException("Student not found with this username "+ username));
     }
 }

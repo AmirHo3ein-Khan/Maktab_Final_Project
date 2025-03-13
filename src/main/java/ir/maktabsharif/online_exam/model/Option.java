@@ -7,6 +7,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Getter
 @Setter
@@ -23,4 +26,11 @@ public class Option extends BaseEntity<Long> {
     @ManyToOne
     @JoinColumn(name = "question_id")
     private MultipleChoiceQuestion question;
+
+    @OneToMany(mappedBy = "option")
+    private List<MultipleChoiceAnswer> answers = new ArrayList<>();
+//    @Override
+//    public String toString() {
+//        return optionText; // This will make it return the option text when the object is printed
+//    }
 }

@@ -117,7 +117,7 @@
 <div class="container">
     <h1>Update Multiple Choice Question</h1>
 
-    <form action="#" th:action="@{/exam/{questionId}/{courseId}/updateMultipleQuestion(questionId=${questionId}, courseId=${courseId})}"
+    <form action="#" th:action="@{/question/{questionId}/{courseId}/updateMultipleQuestion(questionId=${questionId}, courseId=${courseId})}"
           th:object="${mcq}" method="post">
 
 
@@ -153,7 +153,7 @@
         </div>
 
         <div style="text-align: center;">
-            <a th:href="@{/exam/{courseId}/questionBankForDeleteOrUpdate(courseId=${courseId})}" class="back-btn">Back to Question Bank</a>
+            <a th:href="@{/question/{courseId}/questionBankForDeleteOrUpdate(courseId=${courseId})}" class="back-btn">Back to Question Bank</a>
         </div>
     </form>
 </div>

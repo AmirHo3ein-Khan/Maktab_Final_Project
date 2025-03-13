@@ -1,6 +1,7 @@
 package ir.maktabsharif.online_exam.model;
 
 import ir.maktabsharif.online_exam.model.base.BaseEntity;
+import ir.maktabsharif.online_exam.model.enums.ExamState;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -32,6 +33,9 @@ public class Exam extends BaseEntity<Long> {
 
     private Double totalScore;
 
+    @Enumerated(EnumType.STRING)
+    private ExamState examState;
+
     @ManyToOne
     @JoinColumn(name = "COURSE_ID")
     private Course course;
@@ -42,4 +46,7 @@ public class Exam extends BaseEntity<Long> {
 
     @OneToMany(mappedBy = "exam")
     private List<QuestionExam> questionExams = new ArrayList<>();
+
+    @OneToMany(mappedBy = "exam")
+    private List<StudentExam> studentExams = new ArrayList<>();
 }

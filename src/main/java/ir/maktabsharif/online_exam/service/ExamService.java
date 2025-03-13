@@ -1,8 +1,6 @@
 package ir.maktabsharif.online_exam.service;
 
-import ir.maktabsharif.online_exam.model.DescriptiveQuestion;
-import ir.maktabsharif.online_exam.model.Exam;
-import ir.maktabsharif.online_exam.model.MultipleChoiceQuestion;
+import ir.maktabsharif.online_exam.model.*;
 import ir.maktabsharif.online_exam.model.dto.ExamDto;
 
 import java.util.List;

@@ -7,6 +7,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Getter
 @Setter
@@ -23,4 +26,7 @@ public class QuestionExam extends BaseEntity<Long> {
     private Exam exam;
 
     private Double questionScore;
+
+    @OneToMany(mappedBy = "questionExam")
+    private List<Answer> answers = new ArrayList<>();
 }

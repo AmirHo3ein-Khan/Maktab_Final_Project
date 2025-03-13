@@ -102,7 +102,7 @@
 <div class="container">
   <h2>Update Descriptive Question</h2>
 
-  <form th:action="@{/exam/{questionId}/{courseId}/updateDescriptiveQuestion(questionId=${questionId}, courseId=${courseId})}"
+  <form th:action="@{/question/{questionId}/{courseId}/updateDescriptiveQuestion(questionId=${questionId}, courseId=${courseId})}"
         method="post" th:object="${descriptiveQuestion}">
 
     <input type="hidden" th:field="*{id}" />
@@ -128,7 +128,7 @@
     <button type="submit" class="btn btn-primary">Update Question</button>
   </form>
 
-  <a th:href="@{/exam/{courseId}/questionBankForDeleteOrUpdate(courseId=${courseId})}"
+  <a th:href="@{/question/{courseId}/questionBankForDeleteOrUpdate(courseId=${courseId})}"
      class="back-btn">Back to Exam Questions</a>
 </div>
 </body>

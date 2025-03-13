@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Change Password</title>
+    <style>
+        body {
+            background: linear-gradient(135deg, #4b6cb7, #182848);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            background-color: #a5b1f6;
+            border-radius: 10px;
+            padding: 40px;
+            max-width: 400px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            text-align: center;
+            color: #2980b9;
+        }
+        .message {
+            color: red;
+            text-align: center;
+        }
+        .success {
+            color: green;
+            text-align: center;
+        }
+        label {
+            font-weight: bold;
+            display: block;
+            margin-top: 10px;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        button {
+            background-color: #2980b9;
+            color: #fff;
+            padding: 10px;
+            border: none;
+            width: 100%;
+            margin-top: 10px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #1f6699;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Change Password</h2>
+
+    <p class="message" th:if="${error}" th:text="${error}"></p>
+    <p class="success" th:if="${success}" th:text="${success}"></p>
+
+    <form th:action="@{/student/changePass}" method="post">
+        <label for="oldPassword">Old Password:</label>
+        <input type="password" id="oldPassword" name="oldPassword" required />
+
+        <label for="newPassword">New Password:</label>
+        <input type="password" id="newPassword" name="newPassword" required />
+
+        <button type="submit">Update Password</button>
+    </form>
+
+    <p style="text-align: center;"><a th:href="@{/student/panel}">Back to Menu</a></p>
+</div>
+</body>
+</html>

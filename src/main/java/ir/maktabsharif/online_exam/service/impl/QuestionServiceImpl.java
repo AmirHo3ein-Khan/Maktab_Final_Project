@@ -276,4 +276,17 @@ public class QuestionServiceImpl implements QuestionService {
         question.setCourse(course);
         questionRepository.save(question);
     }
+
+    @Override
+    public Question findById(Long id) {
+        return questionRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Question with this id not found :" + id));
+    }
+
+    @Override
+    public List<QuestionExam> findQuestionExamByExam(Long examId) {
+        Exam exam = examRepository.findById(examId)
+                .orElseThrow(() -> new EntityNotFoundException("Exam with this id not found :" + examId));
+        return questionExamRepository.findByExam(exam);
+    }
 }

@@ -140,7 +140,7 @@
                 <td th:text="${course.courseStartedDate}"></td>
                 <td th:text="${course.courseFinishedDate}"></td>
                 <td>
-                    <form th:action="@{/exam/{questionId}/{courseId}/addDeletedQuestionToBank(questionId=${questionId},courseId=${course.id})}" method="post" class="d-inline">
+                    <form th:action="@{/question/{questionId}/{courseId}/addDeletedQuestionToBank(questionId=${questionId},courseId=${course.id})}" method="post" class="d-inline">
                         <button type="submit" class="btn btn-outline btn-sm rounded-pill shadow-sm">
                             <i class="bi me-1"></i> add to bank
                         </button>
@@ -150,7 +150,7 @@
             </tbody>
         </table>
     </div>
-    <p style="text-align: center;"><a th:href="@{/exam/deletedQuestions}">Back to Menu</a></p>
+    <p style="text-align: center;"><a th:href="@{/question/deletedQuestions}">Back to Menu</a></p>
 </div>
 
 </body>

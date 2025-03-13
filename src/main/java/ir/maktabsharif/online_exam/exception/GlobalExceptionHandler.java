@@ -20,6 +20,30 @@ public class GlobalExceptionHandler {
         return "redirect:/exceptionPage";
     }
 
+    @ExceptionHandler(ScoreOfAnswerException.class)
+    public String handleScoreOfAnswerException(ScoreOfAnswerException ex, RedirectAttributes redirectAttributes) {
+        redirectAttributes.addFlashAttribute("exceptionError", "Error! Message: " + ex.getMessage());
+        return "redirect:/exceptionPage";
+    }
+
+    @ExceptionHandler(AnswerTypeException.class)
+    public String handleAnswerTypeException(AnswerTypeException ex, RedirectAttributes redirectAttributes) {
+        redirectAttributes.addFlashAttribute("exceptionError", "Error! Message: " + ex.getMessage());
+        return "redirect:/exceptionPage";
+    }
+
+    @ExceptionHandler(StudentCompletedTheExamException.class)
+    public String handleStudentCompletedTheExamException(StudentCompletedTheExamException ex, RedirectAttributes redirectAttributes) {
+        redirectAttributes.addFlashAttribute("exceptionError", "Error! Message: " + ex.getMessage());
+        return "redirect:/exceptionPage";
+    }
+
+    @ExceptionHandler(StudentSubmittedTheExamException.class)
+    public String handleStudentSubmittedTheExamException(StudentSubmittedTheExamException ex, RedirectAttributes redirectAttributes) {
+        redirectAttributes.addFlashAttribute("exceptionError", "Error! Message: " + ex.getMessage());
+        return "redirect:/exceptionPage";
+    }
+
     @ExceptionHandler(Exception.class)
     public String handleException(Exception ex, RedirectAttributes redirectAttributes) {
         redirectAttributes.addFlashAttribute("exceptionError", "Something went wrong! Message: " + ex.getMessage());

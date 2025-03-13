@@ -3,6 +3,7 @@ package ir.maktabsharif.online_exam.service;
 import ir.maktabsharif.online_exam.model.Course;
 import ir.maktabsharif.online_exam.model.DescriptiveQuestion;
 import ir.maktabsharif.online_exam.model.MultipleChoiceQuestion;
+import ir.maktabsharif.online_exam.model.Student;
 import ir.maktabsharif.online_exam.model.dto.*;
 import ir.maktabsharif.online_exam.model.dto.questiondto.DeleteQuestionFromQuestionBankDto;
 

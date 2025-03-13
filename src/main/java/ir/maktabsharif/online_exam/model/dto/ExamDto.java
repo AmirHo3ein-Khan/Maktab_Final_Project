@@ -24,11 +24,11 @@ public class ExamDto {
     private String description;
 
     @NotNull(message = "Exam time cannot be empty")
-    @Min(value = 30, message = "Exam time must be at least 30 minutes")
+    @Min(value = 1, message = "Exam time must be at least 30 minutes")
     private Integer examTime;
 
     @NotNull(message = "Exam date cannot be empty")
-    @Future(message = "Exam date must be in the future")
+    @FutureOrPresent(message = "Exam date must be today or in the future")
     private LocalDate examDate;
 }
 

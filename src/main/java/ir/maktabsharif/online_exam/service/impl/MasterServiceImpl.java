@@ -37,7 +37,7 @@ public class MasterServiceImpl implements MasterService {
     @Override
     public void masterRegister(MasterDto masterDto) {
         Role masterRole = roleRepository.findByName("MASTER").get();
-        Master master = masterRepository.save(Master.builder()
+        masterRepository.save(Master.builder()
                 .firstName(masterDto.getFirstName())
                 .lastName(masterDto.getLastName())
                 .username(masterDto.getUsername())
@@ -47,20 +47,8 @@ public class MasterServiceImpl implements MasterService {
                 .role(masterRole)
                 .registerState(RegisterState.WAITING)
                 .build());
-//        emailService.sendVerificationEmail(master.getEmail(), siteURL);
     }
 
-//    @Override
-//    public boolean verifyMaster(String token) {
-//        Master master = masterRepository.findByVerificationToken(token);
-//        if (master == null) {
-//            return false;
-//        }
-//        master.setEnabled(true);
-//        master.setVerificationToken(null);
-//        masterRepository.save(master);
-//        return true;
-//    }
 
 
     @Override
@@ -103,6 +91,7 @@ public class MasterServiceImpl implements MasterService {
         return courseRepository.findByMaster(master);
     }
 
+    @Override
     public boolean checkPassword(Master master, String oldPassword) {
         return passwordEncoder.matches(oldPassword, master.getPassword());
     }

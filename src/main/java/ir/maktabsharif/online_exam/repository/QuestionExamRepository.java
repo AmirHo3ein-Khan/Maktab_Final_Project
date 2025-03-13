@@ -18,7 +18,6 @@ public interface QuestionExamRepository extends JpaRepository<QuestionExam , Lon
     @Query("SELECT qe.question FROM QuestionExam qe WHERE qe.exam.id = :examId")
     List<Question> findQuestionsByExamId(@Param("examId") Long examId);
     boolean existsByExamAndQuestion(Exam exam, Question question);
-
-    @Query("SELECT qe FROM QuestionExam qe WHERE qe.exam.id = :examId")
-    List<QuestionExam> findAllQuestionExamByExamId(@Param("examId") Long examId);
+    List<QuestionExam> findAllByExam( Exam exam);
+    List<QuestionExam> findByExam(Exam exam);
 }

@@ -141,7 +141,7 @@
                 <td th:text="${exam.examTime}"></td>
                 <td th:text="${exam.examDate}"></td>
                 <td>
-                    <form th:action="@{/exam/{courseId}/{examId}/questionsOfExam(examId=${exam.id} , courseId=${courseId})}"
+                    <form th:action="@{/question/{courseId}/{examId}/questionsOfExam(examId=${exam.id} , courseId=${courseId})}"
                           method="get" class="d-inline">
                         <button type="submit" class="btn btn-outline-primary btn-sm rounded-pill shadow-sm">
                             <i class="bi me-1"></i> Add Question
@@ -152,7 +152,7 @@
             </tbody>
         </table>
     </div>
-    <p style="text-align: center;"><a th:href="@{/exam/coursesForAddQuestion}">Back to Menu</a></p>
+    <p style="text-align: center;"><a th:href="@{/question/coursesForAddQuestion}">Back to Menu</a></p>
 </div>
 
 </body>

@@ -117,7 +117,7 @@
 <div class="container">
     <h1>Create Multiple Choice Question</h1>
 
-    <form action="#" th:action="@{/exam/{courseId}/{examId}/multipleQuestion(courseId=${courseId}, examId=${examId})}"
+    <form action="#" th:action="@{/question/{courseId}/multipleQuestionForBank(courseId=${courseId})}"
           th:object="${multipleChoiceQuestionDto}" method="post">
 
         <div>
@@ -149,9 +149,7 @@
             <button type="submit">Create Question</button>
         </div>
 
-        <div style="text-align: center;">
-            <a th:href="@{/exam/{courseId}/{examId}/questionsOfExam(courseId=${courseId} , examId=${examId})}" class="back-btn">Back to Exam Questions</a>
-        </div>
+        <a th:href="@{/question/{courseId}/questionBankForDeleteOrUpdate(courseId=${courseId})}" class="back-btn">Back to Question bank</a>
     </form>
 </div>
 

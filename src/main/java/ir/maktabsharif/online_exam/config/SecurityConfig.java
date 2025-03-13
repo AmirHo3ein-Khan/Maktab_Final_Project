@@ -30,7 +30,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/login", "/student/save", "/master/save").permitAll()
                         .requestMatchers("/manager/**", "/course/**").hasRole("MANAGER")
-                        .requestMatchers("/master/**" , "/exam/**").hasRole("MASTER")
+                        .requestMatchers("/master/**" , "/exam/**", "/question/**").hasRole("MASTER")
                         .requestMatchers("/student/**").hasRole("STUDENT")
                         .anyRequest().authenticated()
                 )

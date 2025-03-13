@@ -181,7 +181,7 @@
                     </ul>
                 </td>
                 <td class="text-center">
-                    <form th:action="@{/exam/deleteQuestionFromExam}" method="post">
+                    <form th:action="@{/question/deleteQuestionFromExam}" method="post">
                         <input type="hidden" name="questionId" th:value="${question.id}"/>
                         <input type="hidden" name="examId" th:value="${examId}"/>
                         <input type="hidden" name="courseId" th:value="${courseId}"/>
@@ -198,7 +198,7 @@
                 <td th:text="${question.questionText}"></td>
                 <td>—</td>
                 <td class="text-center">
-                    <form th:action="@{/exam/deleteQuestionFromExam}" method="post">
+                    <form th:action="@{/question/deleteQuestionFromExam}" method="post">
                         <input type="hidden" name="questionId" th:value="${question.id}"/>
                         <input type="hidden" name="examId" th:value="${examId}"/>
                         <input type="hidden" name="courseId" th:value="${courseId}"/>
@@ -214,21 +214,21 @@
 
     </div>
         <div class="form-btn-container">
-            <form th:action="@{/exam/{courseId}/{examId}/multipleQuestion(courseId=${courseId}, examId=${examId})}"
+            <form th:action="@{/question/{courseId}/{examId}/multipleQuestion(courseId=${courseId}, examId=${examId})}"
                   method="get">
                 <button type="submit" class="btn btn-outline-info">
                     <i class="bi me-1"></i> Add Multiple Choice Question
                 </button>
             </form>
 
-            <form th:action="@{/exam/{courseId}/{examId}/descriptiveQuestion(courseId=${courseId}, examId=${examId})}"
+            <form th:action="@{/question/{courseId}/{examId}/descriptiveQuestion(courseId=${courseId}, examId=${examId})}"
                   method="get">
                 <button type="submit" class="btn btn-outline-info">
                     <i class="bi me-1"></i> Add Descriptive Question
                 </button>
             </form>
 
-            <form th:action="@{/exam/{courseId}/{examId}/questionBank(courseId=${courseId}, examId=${examId})}"
+            <form th:action="@{/question/{courseId}/{examId}/questionBank(courseId=${courseId}, examId=${examId})}"
                   method="get">
                 <button type="submit" class="btn btn-outline-info">
                     <i class="bi me-1"></i> Add Question From Question Bank
@@ -236,7 +236,7 @@
             </form>
         </div>
 
-        <a th:href="@{/exam/coursesForAddQuestion}" class="back-link">← Back to course list</a>
+        <a th:href="@{/question/coursesForAddQuestion}" class="back-link">← Back to course list</a>
 </div>
 
 </body>

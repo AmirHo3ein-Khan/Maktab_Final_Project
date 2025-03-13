@@ -141,10 +141,10 @@
                 <td th:text="${question.questionText}"></td>
                 <td th:text="${question.defaultScore}"></td>
                 <td class="text-center">
-                    <form th:action="@{/exam/{questionId}/deleteDeletedQuestion(questionId=${question.id})}" method="post">
+                    <form th:action="@{/question/{questionId}/deleteDeletedQuestion(questionId=${question.id})}" method="post">
                         <button type="submit" class="btn btn-delete"><i class="bi bi-trash"></i> Delete </button>
                     </form>
-                    <form th:action="@{/exam/{questionId}/coursesForAddDeletedQuestionToBank(questionId=${question.id})}" method="get">
+                    <form th:action="@{/question/{questionId}/coursesForAddDeletedQuestionToBank(questionId=${question.id})}" method="get">
                         <button type="submit" class="btn btn-add"><i class="bi"></i> Add to bank</button>
                     </form>
                 </td>
