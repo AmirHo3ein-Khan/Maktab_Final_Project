@@ -3,6 +3,7 @@ package ir.maktabsharif.online_exam.service.impl;
 
 import ir.maktabsharif.online_exam.exception.EntityNotFoundException;
 import ir.maktabsharif.online_exam.exception.QuestionAlreadyExistsInExamException;
+import ir.maktabsharif.online_exam.exception.QuestionNotFoundInExamException;
 import ir.maktabsharif.online_exam.model.*;
 import ir.maktabsharif.online_exam.model.dto.questiondto.*;
 import ir.maktabsharif.online_exam.repository.*;
@@ -151,7 +152,7 @@ public class QuestionServiceImpl implements QuestionService {
                 .orElseThrow(() -> new EntityNotFoundException("Exam with this id not found: " + dto.getExamId()));
 
         QuestionExam questionExam = questionExamRepository.findByExamAndQuestion(exam, question)
-                .orElseThrow(() -> new RuntimeException("Question not found in exam"));
+                .orElseThrow(() -> new QuestionNotFoundInExamException("Not question added for this exam!"));
 
         questionExamRepository.delete(questionExam);
 

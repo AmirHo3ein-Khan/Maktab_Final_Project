@@ -1,6 +1,7 @@
 package ir.maktabsharif.online_exam.service.impl;
 
 import ir.maktabsharif.online_exam.exception.EntityNotFoundException;
+import ir.maktabsharif.online_exam.exception.QuestionNotFoundInExamException;
 import ir.maktabsharif.online_exam.model.*;
 import ir.maktabsharif.online_exam.model.dto.answerdto.DescriptiveAnswerDto;
 import ir.maktabsharif.online_exam.model.dto.answerdto.MultipleChoiceAnswerDto;
@@ -47,7 +48,7 @@ public class AnswerServiceImpl implements AnswerService {
                 .orElseThrow(() -> new EntityNotFoundException("Question with this id not found: " + dto.getExamId()));
 
         QuestionExam questionExam = questionExamRepository.findByExamAndQuestion(exam, question)
-                .orElseThrow(() -> new EntityNotFoundException("Not question added for this exam: " + dto.getExamId()));
+                .orElseThrow(() -> new QuestionNotFoundInExamException("Not question added for this exam: " + dto.getExamId()));
 
         Option selectedOption = optionRepository.findById(dto.getSelectedOptionId())
                 .orElseThrow(() -> new EntityNotFoundException("Option with this id not found: " + dto.getSelectedOptionId()));
@@ -73,7 +74,7 @@ public class AnswerServiceImpl implements AnswerService {
                 .orElseThrow(() -> new EntityNotFoundException("Question with this id not found: " + dto.getExamId()));
 
         QuestionExam questionExam = questionExamRepository.findByExamAndQuestion(exam, question)
-                .orElseThrow(() -> new EntityNotFoundException("Not question added for this exam: " + dto.getExamId()));
+                .orElseThrow(() -> new QuestionNotFoundInExamException("Not question added for this exam!"));
 
 
         DescriptiveAnswer descriptiveAnswer = DescriptiveAnswer.builder()

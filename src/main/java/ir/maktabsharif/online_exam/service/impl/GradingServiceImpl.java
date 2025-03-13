@@ -1,8 +1,6 @@
 package ir.maktabsharif.online_exam.service.impl;
 
-import ir.maktabsharif.online_exam.exception.AnswerTypeException;
-import ir.maktabsharif.online_exam.exception.EntityNotFoundException;
-import ir.maktabsharif.online_exam.exception.ScoreOfAnswerException;
+import ir.maktabsharif.online_exam.exception.*;
 import ir.maktabsharif.online_exam.model.*;
 import ir.maktabsharif.online_exam.repository.*;
 import ir.maktabsharif.online_exam.service.GradingService;
@@ -50,10 +48,10 @@ public class GradingServiceImpl implements GradingService {
                 .orElseThrow(() -> new EntityNotFoundException("Question with this id not found: " + questionId));
 
         QuestionExam questionExam = questionExamRepository.findByExamAndQuestion(exam, question)
-                .orElseThrow(() -> new EntityNotFoundException("Not question added for this exam: " + examId));
+                .orElseThrow(() -> new QuestionNotFoundInExamException("Not question added for this exam!"));
 
         Answer answer = answerRepository.findByQuestionExam(questionExam)
-                .orElseThrow(() -> new EntityNotFoundException("No answer added for this question!"));
+                .orElseThrow(() -> new EntityNotFoundException("Student answer non of questions!"));
 
         Double scoreOfQuestion = questionExam.getQuestionScore();
         if (scoreOfQuestion == null) {
@@ -66,7 +64,6 @@ public class GradingServiceImpl implements GradingService {
                 answerRepository.save(answer);
             }
         }
-
     }
 
 
@@ -79,10 +76,10 @@ public class GradingServiceImpl implements GradingService {
                 .orElseThrow(() -> new EntityNotFoundException("Question with this id not found: " + questionId));
 
         QuestionExam questionExam = questionExamRepository.findByExamAndQuestion(exam, question)
-                .orElseThrow(() -> new EntityNotFoundException("Not question added for this exam: " + examId));
+                .orElseThrow(() -> new QuestionNotFoundInExamException("Not question added for this exam!"));
 
         Answer answer = answerRepository.findByQuestionExam(questionExam)
-                .orElseThrow(() -> new EntityNotFoundException("No answer added for this question!"));
+                .orElseThrow(() -> new EntityNotFoundException("Student answer non of questions!"));
 
         Double maxScoreOfQuestion = questionExam.getQuestionScore();
         if (maxScoreOfQuestion == null) {
@@ -130,7 +127,7 @@ public class GradingServiceImpl implements GradingService {
                 .orElseThrow(() -> new EntityNotFoundException("Question with this id not found: " + questionId));
 
         QuestionExam questionExam = questionExamRepository.findByExamAndQuestion(exam, question)
-                .orElseThrow(() -> new EntityNotFoundException("Not question added for this exam: " + examId));
+                .orElseThrow(() -> new QuestionNotFoundInExamException("Not question added for this exam!"));
 
         Double maxScoreOfQuestion = questionExam.getQuestionScore();
         if (maxScoreOfQuestion == null) {
@@ -161,7 +158,7 @@ public class GradingServiceImpl implements GradingService {
         }
 
         StudentExam studentExam = studentExamRepository.findByStudentAndExam(student, exam)
-                .orElseThrow(() -> new EntityNotFoundException("This student not completed this exam!"));
+                .orElseThrow(() -> new NotCompletedExamException("This student not completed this exam!"));
 
         studentExam.setExamScoreForStudent(totalStudentScoreForExam);
         studentExamRepository.save(studentExam);
@@ -176,7 +173,7 @@ public class GradingServiceImpl implements GradingService {
                 .orElseThrow(() -> new EntityNotFoundException("Exam with this id not found: " + examId));
 
         StudentExam studentExam = studentExamRepository.findByStudentAndExam(student, exam)
-                .orElseThrow(() -> new EntityNotFoundException("This student not completed this exam!"));
+                .orElseThrow(() -> new NotCompletedExamException("This student not completed this exam!"));
 
         return studentExam.getExamScoreForStudent();
     }

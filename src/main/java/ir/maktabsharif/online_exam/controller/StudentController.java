@@ -192,6 +192,7 @@ public class StudentController {
         long secondsLeft = remainingTime.getSeconds();
 
         if (currentTime.isAfter(endAt)) {
+            endExam(examId , model , principal);
             model.addAttribute("error", "Your exam time has expired.");
             return "student/examErrorPage";
         }
@@ -252,8 +253,8 @@ public class StudentController {
     public String saveAnswer(@PathVariable Long examId,
                              @RequestParam Long studentId,
                              @RequestParam int questionIndex,
-                             @RequestParam Long selectedOptionId,
-                             @RequestParam String answer,
+                             @RequestParam(required = false) Long selectedOptionId,
+                             @RequestParam(required = false) String answer,
                              Model model) {
 
         Exam exam = examService.findById(examId);

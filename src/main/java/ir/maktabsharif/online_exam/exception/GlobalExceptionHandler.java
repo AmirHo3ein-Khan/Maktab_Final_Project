@@ -37,6 +37,16 @@ public class GlobalExceptionHandler {
         redirectAttributes.addFlashAttribute("exceptionError", "Error! Message: " + ex.getMessage());
         return "redirect:/exceptionPage";
     }
+    @ExceptionHandler(QuestionNotFoundInExamException.class)
+    public String handleQuestionNotFoundInExamException(QuestionNotFoundInExamException ex, RedirectAttributes redirectAttributes) {
+        redirectAttributes.addFlashAttribute("exceptionError", "Error! Message: " + ex.getMessage());
+        return "redirect:/exceptionPage";
+    }
+    @ExceptionHandler(NotCompletedExamException.class)
+    public String handleNotCompletedExamException(NotCompletedExamException ex, RedirectAttributes redirectAttributes) {
+        redirectAttributes.addFlashAttribute("exceptionError", "Error! Message: " + ex.getMessage());
+        return "redirect:/exceptionPage";
+    }
 
     @ExceptionHandler(StudentSubmittedTheExamException.class)
     public String handleStudentSubmittedTheExamException(StudentSubmittedTheExamException ex, RedirectAttributes redirectAttributes) {
