@@ -13,7 +13,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @SuperBuilder
-@PrimaryKeyJoinColumn(name="user_id", referencedColumnName = "id")
+//@PrimaryKeyJoinColumn(name="user_id", referencedColumnName = "id")
 @DiscriminatorValue("MASTER")
 public class Master extends User {
     @OneToMany(mappedBy = "master")

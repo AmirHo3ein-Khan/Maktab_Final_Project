@@ -13,11 +13,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@AllArgsConstructor
-@NoArgsConstructor
 @Getter
 @Setter
 @SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Role extends BaseEntity<Long> {
     private String name;
     @OneToMany(mappedBy = "role")

@@ -1,21 +1,15 @@
 package ir.maktabsharif.online_exam.controller;
 
 import ir.maktabsharif.online_exam.model.Course;
-import ir.maktabsharif.online_exam.model.Master;
-import ir.maktabsharif.online_exam.model.Student;
 import ir.maktabsharif.online_exam.model.dto.*;
 import ir.maktabsharif.online_exam.service.CourseService;
 import ir.maktabsharif.online_exam.service.MasterService;
 import ir.maktabsharif.online_exam.service.StudentService;
 import jakarta.validation.Valid;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-
-import java.security.Principal;
-import java.util.List;
 
 @Controller
 @RequestMapping("/course")
