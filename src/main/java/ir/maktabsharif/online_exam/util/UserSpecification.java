@@ -2,10 +2,10 @@ package ir.maktabsharif.online_exam.util;
 
 import ir.maktabsharif.online_exam.model.Role;
 import ir.maktabsharif.online_exam.model.User;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.Root;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.Root;
 import org.springframework.data.jpa.domain.Specification;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +18,7 @@ public class UserSpecification {
             }
 
             String pattern = "%" + keyword.toLowerCase() + "%";
-            List<javax.persistence.criteria.Predicate> predicates = new ArrayList<>();
+            List<jakarta.persistence.criteria.Predicate> predicates = new ArrayList<>();
 
             predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("firstName")), pattern));
             predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("lastName")), pattern));
@@ -27,7 +27,7 @@ public class UserSpecification {
 
             predicates.add(criteriaBuilder.like(criteriaBuilder.lower(roleJoin.get("name")), pattern));
 
-            return criteriaBuilder.or(predicates.toArray(new javax.persistence.criteria.Predicate[0]));
+            return criteriaBuilder.or(predicates.toArray(new jakarta.persistence.criteria.Predicate[0]));
         };
     }
 }

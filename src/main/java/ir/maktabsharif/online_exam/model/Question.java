@@ -1,7 +1,7 @@
 package ir.maktabsharif.online_exam.model;
 
 import ir.maktabsharif.online_exam.model.base.BaseEntity;
-import javax.persistence.*;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

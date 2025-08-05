@@ -4,7 +4,7 @@ import ir.maktabsharif.online_exam.model.User;
 import ir.maktabsharif.online_exam.model.dto.UserDto;
 import ir.maktabsharif.online_exam.service.RoleService;
 import ir.maktabsharif.online_exam.service.UserService;
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;

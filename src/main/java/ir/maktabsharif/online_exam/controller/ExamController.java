@@ -3,7 +3,7 @@ package ir.maktabsharif.online_exam.controller;
 import ir.maktabsharif.online_exam.model.*;
 import ir.maktabsharif.online_exam.model.dto.*;
 import ir.maktabsharif.online_exam.service.*;
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;

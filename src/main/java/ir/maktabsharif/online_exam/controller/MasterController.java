@@ -5,7 +5,7 @@ import ir.maktabsharif.online_exam.model.dto.MasterDto;
 import ir.maktabsharif.online_exam.model.dto.response.ApiResponseDto;
 import ir.maktabsharif.online_exam.service.*;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

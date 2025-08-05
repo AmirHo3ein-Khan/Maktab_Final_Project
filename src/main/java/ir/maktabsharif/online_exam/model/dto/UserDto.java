@@ -4,7 +4,7 @@ import lombok.*;
 
 import java.time.LocalDate;
 
-import javax.validation.constraints.*;
+import jakarta.validation.constraints.*;
 import lombok.*;
 
 import java.time.LocalDate;

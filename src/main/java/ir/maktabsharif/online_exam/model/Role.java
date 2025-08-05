@@ -1,8 +1,8 @@
 package ir.maktabsharif.online_exam.model;
 
 import ir.maktabsharif.online_exam.model.base.BaseEntity;
-import javax.persistence.Entity;
-import javax.persistence.OneToMany;
+import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

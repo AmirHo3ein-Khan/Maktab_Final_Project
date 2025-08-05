@@ -31,32 +31,18 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-//        http
-//                .authorizeHttpRequests(auth -> auth
-//                        .requestMatchers(allowedPathsWithOutAuthentication).permitAll()
-//                        .requestMatchers(managerPathAllowed).hasRole("MANAGER")
-//                        .requestMatchers(masterPathAllowed).hasRole("MASTER")
-//                        .requestMatchers(studentPathAllowed).hasRole("STUDENT")
-//                        .anyRequest().authenticated()
-//                )
-//                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-//                .addFilterBefore(jwtAuthorizationFilter , UsernamePasswordAuthenticationFilter.class);
-//
-//        return http.build();
         http
-                .csrf().disable()
-                .authorizeRequests()
-                .antMatchers(allowedPathsWithOutAuthentication).permitAll()
-                .antMatchers(managerPathAllowed).hasAuthority("MANAGER")
-                .antMatchers(masterPathAllowed).hasAuthority("MASTER")
-                .antMatchers(studentPathAllowed).hasAuthority("STUDENT")
-                .anyRequest().authenticated()
-                .and()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
-                .addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class);
-        return http.build();
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(allowedPathsWithOutAuthentication).permitAll()
+                        .requestMatchers(managerPathAllowed).hasRole("MANAGER")
+                        .requestMatchers(masterPathAllowed).hasRole("MASTER")
+                        .requestMatchers(studentPathAllowed).hasRole("STUDENT")
+                        .anyRequest().authenticated()
+                )
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .addFilterBefore(jwtAuthorizationFilter , UsernamePasswordAuthenticationFilter.class);
 
+        return http.build();
     }
 
     @Bean

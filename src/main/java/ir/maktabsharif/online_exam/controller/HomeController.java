@@ -32,16 +32,6 @@ public class HomeController {
     }
 
 
-//    @GetMapping("/")
-//    public String home() {
-//        return "index";
-//    }
-
-//    @GetMapping("/login")
-//    public String loginPage() {
-//        return "/login";
-//    }
-
     @PostMapping("/login")
     @ResponseBody
     public ResponseEntity<?> login(@RequestBody LoginDto loginDto) {

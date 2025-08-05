@@ -9,7 +9,7 @@ import ir.maktabsharif.online_exam.model.dto.response.ApiResponseDto;
 import ir.maktabsharif.online_exam.model.enums.ExamState;
 import ir.maktabsharif.online_exam.service.*;
 import ir.maktabsharif.online_exam.util.AnswerCacheService;
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;

@@ -6,7 +6,7 @@ import ir.maktabsharif.online_exam.repository.ManagerRepository;
 import ir.maktabsharif.online_exam.repository.RoleRepository;
 import ir.maktabsharif.online_exam.repository.UserRepository;
 import ir.maktabsharif.online_exam.service.ManagerService;
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
