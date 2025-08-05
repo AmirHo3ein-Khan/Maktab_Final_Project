@@ -34,7 +34,7 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public void saveStudent(StudentDto studentDto) {
+    public void studentRegister(StudentDto studentDto) {
         Role student = roleRepository.findByName("STUDENT").get();
         studentRepository.save(Student.builder()
                 .firstName(studentDto.getFirstName())

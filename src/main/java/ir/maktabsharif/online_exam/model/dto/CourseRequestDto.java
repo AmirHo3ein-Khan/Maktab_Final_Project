@@ -4,7 +4,7 @@ import lombok.*;
 
 import java.time.LocalDate;
 
-import jakarta.validation.constraints.*;
+import javax.validation.constraints.*;
 
 @Builder
 @Getter

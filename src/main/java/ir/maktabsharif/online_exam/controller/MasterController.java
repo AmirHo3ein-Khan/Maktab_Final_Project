@@ -2,10 +2,13 @@ package ir.maktabsharif.online_exam.controller;
 
 import ir.maktabsharif.online_exam.model.*;
 import ir.maktabsharif.online_exam.model.dto.MasterDto;
+import ir.maktabsharif.online_exam.model.dto.response.ApiResponseDto;
 import ir.maktabsharif.online_exam.service.*;
-import jakarta.validation.Valid;
+
+import javax.validation.Valid;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@Controller
+@RestController
 @RequestMapping("/master")
 public class MasterController {
     private final MasterService masterService;
@@ -40,46 +43,23 @@ public class MasterController {
         this.gradingService = gradingService;
     }
 
-    @GetMapping("/panel")
-    public String home() {
-        return "master/masterPanel";
-    }
-
-
-    @GetMapping("/save")
-    public String showSaveMasterForm(Model model) {
-        model.addAttribute("master", new MasterDto());
-        return "master/register";
-    }
-
-    @PostMapping("/save")
-    public String saveMaster(@Valid @ModelAttribute("master") MasterDto masterDto, BindingResult result) {
-        if (result.hasErrors()) {
-            return "master/register";
-        }
+    @PostMapping("/register")
+    public ResponseEntity<ApiResponseDto> registerMaster(@Valid @RequestBody MasterDto masterDto) {
         masterService.masterRegister(masterDto);
-        return "redirect:/login?success";
-    }
-
-    @GetMapping("/edit")
-    public String editMasterForm(Principal principal, Model model) {
-        String username = principal.getName();
-        Master master = masterService.findByUsername(username);
-        model.addAttribute("master", master);
-        model.addAttribute("masterId", master.getId());
-        return "master/edit-master";
+        String msg = "register.master.success";
+        ApiResponseDto body = new ApiResponseDto(msg , true);
+        return ResponseEntity.status(HttpStatus.CREATED).body(body);
     }
 
     @PostMapping("/edit/{id}")
-    public String updateMaster(@PathVariable("id") Long id, @Valid @ModelAttribute("master") MasterDto masterDto, BindingResult result) {
-        if (result.hasErrors()) {
-            return "master/edit-master";
-        }
+    public ResponseEntity<ApiResponseDto> updateMaster(@PathVariable("id") Long id, @Valid MasterDto masterDto) {
         boolean isUpdate = masterService.updateMaster(id, masterDto);
         if (isUpdate) {
-            return "redirect:/master/edit?success";
+            String msg = "register.master.success";
+            return ResponseEntity.ok(new ApiResponseDto(msg , true));
+        } else {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        return "redirect:/master/edit/{id}";
     }
 
     @GetMapping("/courses")
@@ -156,12 +136,12 @@ public class MasterController {
     private String completedExamsOfStudent(@PathVariable Long studentId, Model model) {
         List<Exam> completedExamsOfStudent = studentExamService.findCompletedExamsOfStudent(studentId);
         model.addAttribute("completedExamsOfStudent", completedExamsOfStudent);
-        model.addAttribute("studentId" , studentId);
+        model.addAttribute("studentId", studentId);
         return "master/examsOfStudent";
     }
 
     @GetMapping("/{examId}/{studentId}/gradingExam")
-    private String gradingExam(@PathVariable Long examId,@PathVariable Long studentId , Model model ) {
+    private String gradingExam(@PathVariable Long examId, @PathVariable Long studentId, Model model) {
 
         Student student = studentService.findById(studentId);
 
@@ -184,14 +164,14 @@ public class MasterController {
         }
         model.addAttribute("maxScores", maxScores);
 
-        gradingService.setTotalScoreOfExamForStudent(studentId , examId);
+        gradingService.setTotalScoreOfExamForStudent(studentId, examId);
         Double scoreOfStudentInExam = gradingService.getScoreOfStudentInExam(studentId, examId);
         model.addAttribute("scoreOfStudentInExam", scoreOfStudentInExam);
 
         Map<Long, Double> answerGrades = gradingService.getAnswerGrades(studentId, examId);
         model.addAttribute("answerGrades", answerGrades);
 
-        Map<Long, Object> rawStudentAnswers  = answerService.getStudentAnswers(student.getId(), examId);
+        Map<Long, Object> rawStudentAnswers = answerService.getStudentAnswers(student.getId(), examId);
 
         Map<Long, String> studentAnswers = new HashMap<>();
         for (Map.Entry<Long, Object> entry : rawStudentAnswers.entrySet()) {
@@ -218,9 +198,10 @@ public class MasterController {
 
         return "master/gradingExam";
     }
+
     @PostMapping("/{questionId}/{examId}/{studentId}/gradingQuestion")
-    public String gradingQuestion(@PathVariable Long questionId ,@PathVariable Long examId ,@PathVariable Long studentId, Double score, Model model){
-        gradingService.gradingDescriptiveAnswer(questionId , examId , score);
+    public String gradingQuestion(@PathVariable Long questionId, @PathVariable Long examId, @PathVariable Long studentId, Double score, Model model) {
+        gradingService.gradingDescriptiveAnswer(questionId, examId, score);
         return "redirect:/master/{examId}/{studentId}/gradingExam";
     }
 

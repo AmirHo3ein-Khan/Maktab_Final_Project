@@ -3,8 +3,9 @@ package ir.maktabsharif.online_exam.controller;
 
 import ir.maktabsharif.online_exam.config.CustomUserDetailsService;
 import ir.maktabsharif.online_exam.config.JwtTokenProvider;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletResponse;
+import ir.maktabsharif.online_exam.config.UserDetailsImpl;
+import ir.maktabsharif.online_exam.model.dto.LoginDto;
+import ir.maktabsharif.online_exam.model.dto.LoginResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -12,46 +13,47 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.Map;
 
 @Controller
 public class HomeController {
-private final JwtTokenProvider jwtTokenProvider;
-private final CustomUserDetailsService customUserDetailsService;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final CustomUserDetailsService customUserDetailsService;
+    private final AuthenticationManager authenticationManager;
 
-    public HomeController(JwtTokenProvider jwtTokenProvider, CustomUserDetailsService customUserDetailsService) {
+    public HomeController(JwtTokenProvider jwtTokenProvider, CustomUserDetailsService customUserDetailsService, AuthenticationManager authenticationManager) {
         this.jwtTokenProvider = jwtTokenProvider;
         this.customUserDetailsService = customUserDetailsService;
+        this.authenticationManager = authenticationManager;
     }
 
 
-    @GetMapping("/")
-    public String home(){
-        return "index";
-    }
+//    @GetMapping("/")
+//    public String home() {
+//        return "index";
+//    }
 
-    @GetMapping("/login")
-    public String loginPage(){
-        return "/login";
-    }
+//    @GetMapping("/login")
+//    public String loginPage() {
+//        return "/login";
+//    }
 
     @PostMapping("/login")
     @ResponseBody
-    public ResponseEntity<?> login(@RequestParam String username, @RequestParam String password) {
+    public ResponseEntity<?> login(@RequestBody LoginDto loginDto) {
         try {
-            UserDetails user = customUserDetailsService.loadUserByUsername(username);
+            var auth = new UsernamePasswordAuthenticationToken(loginDto.getUsername(), loginDto.getPassword());
+            Authentication authenticate = authenticationManager.authenticate(auth);
+            UserDetailsImpl userDetails = (UserDetailsImpl) authenticate.getPrincipal();
 
-            String token = jwtTokenProvider.generateToken(user);
 
-            return ResponseEntity.ok(Map.of("token", token));
+            String token = jwtTokenProvider.generateToken(userDetails);
+
+            return ResponseEntity.ok(new LoginResponse(token));
 
         } catch (UsernameNotFoundException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not found");
@@ -60,7 +62,7 @@ private final CustomUserDetailsService customUserDetailsService;
 
 
     @GetMapping("/logout")
-    public String logout(){
+    public String logout() {
         return "login";
     }
 

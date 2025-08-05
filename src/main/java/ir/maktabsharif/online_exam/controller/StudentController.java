@@ -5,23 +5,24 @@ import ir.maktabsharif.online_exam.model.dto.StudentDto;
 import ir.maktabsharif.online_exam.model.dto.StudentExamDto;
 import ir.maktabsharif.online_exam.model.dto.answerdto.DescriptiveAnswerDto;
 import ir.maktabsharif.online_exam.model.dto.answerdto.MultipleChoiceAnswerDto;
+import ir.maktabsharif.online_exam.model.dto.response.ApiResponseDto;
 import ir.maktabsharif.online_exam.model.enums.ExamState;
 import ir.maktabsharif.online_exam.service.*;
 import ir.maktabsharif.online_exam.util.AnswerCacheService;
-import jakarta.validation.Valid;
-import org.springframework.stereotype.Controller;
+import javax.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
 import java.security.Principal;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@Controller
+@RestController
 @RequestMapping("/student")
 public class StudentController {
     private final StudentService studentService;
@@ -45,24 +46,12 @@ public class StudentController {
         this.gradingService = gradingService;
     }
 
-    @GetMapping("/panel")
-    public String home() {
-        return "student/studentPanel";
-    }
-
-    @GetMapping("/save")
-    public String showSaveStudentForm(Model model) {
-        model.addAttribute("student", new StudentDto());
-        return "student/register";
-    }
-
-    @PostMapping("/save")
-    public String saveStudent(@Valid @ModelAttribute("student") StudentDto studentDto, BindingResult result) {
-        if (result.hasErrors()) {
-            return "student/register";
-        }
-        studentService.saveStudent(studentDto);
-        return "redirect:/login?success";
+    @PostMapping("/register")
+    public ResponseEntity<ApiResponseDto> registerStudent(@Valid @RequestBody StudentDto studentDto) {
+        studentService.studentRegister(studentDto);
+        String msg = "register.student.success";
+        ApiResponseDto body = new ApiResponseDto(msg , true);
+        return ResponseEntity.status(HttpStatus.CREATED).body(body);
     }
 
     @GetMapping("/edit")
