@@ -51,7 +51,7 @@ public class MasterController {
         return ResponseEntity.status(HttpStatus.CREATED).body(body);
     }
 
-    @PostMapping("/edit/{id}")
+    @PutMapping("/edit/{id}")
     public ResponseEntity<ApiResponseDto> updateMaster(@PathVariable("id") Long id, @Valid MasterDto masterDto) {
         boolean isUpdate = masterService.updateMaster(id, masterDto);
         if (isUpdate) {

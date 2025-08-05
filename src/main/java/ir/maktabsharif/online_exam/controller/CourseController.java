@@ -2,10 +2,12 @@ package ir.maktabsharif.online_exam.controller;
 
 import ir.maktabsharif.online_exam.model.Course;
 import ir.maktabsharif.online_exam.model.dto.*;
+import ir.maktabsharif.online_exam.model.dto.response.ApiResponseDto;
 import ir.maktabsharif.online_exam.service.CourseService;
 import ir.maktabsharif.online_exam.service.MasterService;
 import ir.maktabsharif.online_exam.service.StudentService;
 import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -30,14 +32,12 @@ public class CourseController {
         return "course/saveCourse";
     }
 
-    @PostMapping("/save")
-    public String createCourse(@Valid @ModelAttribute("course") CourseRequestDto courseRequestDto, BindingResult result) {
-        if (result.hasErrors()){
-            return "course/saveCourse";
-        }
-        courseService.createCourse(courseRequestDto);
-        return "redirect:/course/save?success";
-    }
+
+//    @PostMapping("/save")
+//    public ResponseEntity<ApiResponseDto> createCourse(@Valid @ModelAttribute("course") CourseRequestDto courseRequestDto, BindingResult result) {
+//
+//        courseService.createCourse(courseRequestDto);
+//    }
 
     @GetMapping("/edit/{id}")
     public String updateCourseForm(@PathVariable Long id , Model model) {

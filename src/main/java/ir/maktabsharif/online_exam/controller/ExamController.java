@@ -2,8 +2,10 @@ package ir.maktabsharif.online_exam.controller;
 
 import ir.maktabsharif.online_exam.model.*;
 import ir.maktabsharif.online_exam.model.dto.*;
+import ir.maktabsharif.online_exam.model.dto.response.ApiResponseDto;
 import ir.maktabsharif.online_exam.service.*;
 import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -22,6 +24,18 @@ public class ExamController {
         this.examService = examService;
         this.masterService = masterService;
         this.courseService = courseService;
+    }
+
+    @PostMapping("/{courseId}/save")
+    public ResponseEntity<ApiResponseDto> createExam(@PathVariable Long courseId,
+                                                     @RequestParam Long masterId,
+                                                     @RequestBody ExamDto examDto,
+                                                     Principal principal) {
+        String username = principal.getName();
+//        Master master = masterService.findByUsername(username);
+        examService.addExamToCourse(courseId, masterId, examDto);
+        String msg = "save.exam.success";
+        return ResponseEntity.ok(new ApiResponseDto(msg , true));
     }
 
     @GetMapping("/{courseId}/save")

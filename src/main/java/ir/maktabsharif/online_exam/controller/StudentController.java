@@ -1,6 +1,7 @@
 package ir.maktabsharif.online_exam.controller;
 
 import ir.maktabsharif.online_exam.model.*;
+import ir.maktabsharif.online_exam.model.dto.MasterDto;
 import ir.maktabsharif.online_exam.model.dto.StudentDto;
 import ir.maktabsharif.online_exam.model.dto.StudentExamDto;
 import ir.maktabsharif.online_exam.model.dto.answerdto.DescriptiveAnswerDto;
@@ -54,25 +55,15 @@ public class StudentController {
         return ResponseEntity.status(HttpStatus.CREATED).body(body);
     }
 
-    @GetMapping("/edit")
-    public String updateStudentForm(Principal principal, Model model) {
-        String username = principal.getName();
-        Student student = studentService.findByUsername(username);
-        model.addAttribute("student", student);
-        model.addAttribute("studentId", student.getId());
-        return "student/edit-student";
-    }
-
-    @PostMapping("/edit/{id}")
-    public String updateStudent(@PathVariable("id") Long id, @Valid @ModelAttribute("student") StudentDto studentDto, BindingResult result) {
-        if (result.hasErrors()) {
-            return "student/edit-student";
+    @PutMapping("/edit/{id}")
+    public ResponseEntity<ApiResponseDto> updateStudent(@PathVariable("id") Long id, @Valid StudentDto studentDto) {
+        boolean isUpdate = studentService.updateStudent(id, studentDto);
+        if (isUpdate) {
+            String msg = "register.student.success";
+            return ResponseEntity.ok(new ApiResponseDto(msg , true));
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        boolean isUpdated = studentService.updateStudent(id, studentDto);
-        if (isUpdated) {
-            return "redirect:/student/edit?success";
-        }
-        return "redirect:/student/edit/{id}";
     }
 
     @GetMapping("/changePass")
