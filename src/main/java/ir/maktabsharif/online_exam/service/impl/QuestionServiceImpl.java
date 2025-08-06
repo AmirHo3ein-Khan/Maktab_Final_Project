@@ -261,14 +261,14 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
-    public void deleteDeletedQuestionFromBank(Long questionId) {
+    public void deletedQuestionFromTrash(Long questionId) {
         Question question = questionRepository.findById(questionId)
                 .orElseThrow(() -> new EntityNotFoundException("Question with this id not found :" + questionId));
         questionRepository.delete(question);
     }
 
     @Override
-    public void addDeletedQuestionFromBankToBank(Long questionId, Long courseId) {
+    public void addQuestionFromTrashToBank(Long questionId, Long courseId) {
         Question question = questionRepository.findById(questionId)
                 .orElseThrow(() -> new EntityNotFoundException("Question with this id not found :" + questionId));
         Course course = courseRepository.findById(courseId)

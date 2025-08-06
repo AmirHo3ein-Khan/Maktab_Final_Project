@@ -21,8 +21,8 @@ public interface QuestionService {
     MultipleChoiceQuestion findMCQById(Long questionId);
     DescriptiveQuestion findDQById(Long questionId);
     List<Question> deletedQuestions();
-    void deleteDeletedQuestionFromBank(Long questionId);
-    void addDeletedQuestionFromBankToBank(Long questionId , Long courseId);
+    void deletedQuestionFromTrash(Long questionId);
+    void addQuestionFromTrashToBank(Long questionId , Long courseId);
     Question findById(Long id);
     List<QuestionExam> findQuestionExamByExam(Long examId);
 }

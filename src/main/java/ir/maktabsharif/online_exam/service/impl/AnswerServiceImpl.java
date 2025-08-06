@@ -16,6 +16,7 @@ import java.util.Map;
 @Service
 public class AnswerServiceImpl implements AnswerService {
     private final MultipleChoiceAnswerRepository multipleChoiceAnswerRepository;
+    private final AnswerRepository answerRepository;
     private final DescriptiveAnswerRepository descriptiveAnswerRepository;
     private final StudentRepository studentRepository;
     private final QuestionExamRepository questionExamRepository;
@@ -23,10 +24,11 @@ public class AnswerServiceImpl implements AnswerService {
     private final ExamRepository examRepository;
     private final OptionRepository optionRepository;
 
-    public AnswerServiceImpl(MultipleChoiceAnswerRepository multipleChoiceAnswerRepository, DescriptiveAnswerRepository descriptiveAnswerRepository,
+    public AnswerServiceImpl(MultipleChoiceAnswerRepository multipleChoiceAnswerRepository, AnswerRepository answerRepository, DescriptiveAnswerRepository descriptiveAnswerRepository,
                              StudentRepository studentRepository, QuestionExamRepository questionExamRepository, QuestionRepository questionRepository,
                              ExamRepository examRepository, OptionRepository optionRepository) {
         this.multipleChoiceAnswerRepository = multipleChoiceAnswerRepository;
+        this.answerRepository = answerRepository;
         this.descriptiveAnswerRepository = descriptiveAnswerRepository;
         this.questionExamRepository = questionExamRepository;
         this.questionRepository = questionRepository;
@@ -112,6 +114,12 @@ public class AnswerServiceImpl implements AnswerService {
         }
 
         return answers;
+    }
+
+    @Override
+    public Answer findAnswer(Long answerId) {
+        return answerRepository.findById(answerId)
+                .orElseThrow(() -> new EntityNotFoundException("Answer with this id not found: " + answerId));
     }
 
 

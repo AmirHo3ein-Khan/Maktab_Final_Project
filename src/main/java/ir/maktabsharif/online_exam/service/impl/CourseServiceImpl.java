@@ -4,6 +4,7 @@ import ir.maktabsharif.online_exam.exception.EntityNotFoundException;
 import ir.maktabsharif.online_exam.model.*;
 import ir.maktabsharif.online_exam.model.dto.*;
 import ir.maktabsharif.online_exam.model.dto.questiondto.DeleteQuestionFromQuestionBankDto;
+import ir.maktabsharif.online_exam.model.dto.response.CourseResponseDto;
 import ir.maktabsharif.online_exam.repository.*;
 import ir.maktabsharif.online_exam.service.CourseService;
 import org.springframework.stereotype.Service;
@@ -43,7 +44,7 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public void updateCourse(Long id, CourseRequestDto courseRequestDto) {
         Course course = courseRepository.findById(id)
-                .orElseThrow(()-> new EntityNotFoundException("Course with this id not found :"+ id));
+                .orElseThrow(() -> new EntityNotFoundException("Course with this id not found :" + id));
         course.setTitle(courseRequestDto.getTitle());
         course.setUnit(courseRequestDto.getUnit());
         course.setCourseStartedDate(courseRequestDto.getCourseStartedDate());
@@ -67,7 +68,7 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public void deleteCourse(Long id) {
         Course course = courseRepository.findById(id)
-                .orElseThrow(()-> new EntityNotFoundException("Course with this id not found :"+ id));
+                .orElseThrow(() -> new EntityNotFoundException("Course with this id not found :" + id));
         List<Exam> exams = course.getExams();
         List<Question> questions = course.getQuestions();
         questionRepository.deleteAll(questions);
@@ -76,47 +77,58 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public List<Course> findAll() {
-        return courseRepository.findAll();
+    public List<CourseResponseDto> findAll() {
+        List<Course> courses = courseRepository.findAll();
+        List<CourseResponseDto> courseResponseDtoList = new ArrayList<>();
+        for (Course course : courses) {
+            CourseResponseDto courseResponseDto = new CourseResponseDto();
+            courseResponseDto.setTitle(course.getTitle());
+            courseResponseDto.setUnit(course.getUnit());
+            courseResponseDto.setCourseStartedDate(course.getCourseStartedDate());
+            courseResponseDto.setCourseFinishedDate(course.getCourseFinishedDate());
+            courseResponseDtoList.add(courseResponseDto);
+        }
+        return courseResponseDtoList;
     }
+
     @Override
     public void addStudentToCourse(AddStudentToCourseDto addStudentToCourseDto) {
 
         Course course = courseRepository.findById(addStudentToCourseDto.getCourseId())
-                .orElseThrow(()-> new EntityNotFoundException("Course with this id not found :"+ addStudentToCourseDto.getCourseId()));
+                .orElseThrow(() -> new EntityNotFoundException("Course with this id not found :" + addStudentToCourseDto.getCourseId()));
 
         Student student = studentRepository.findById(addStudentToCourseDto.getStudentId())
-                .orElseThrow(()-> new EntityNotFoundException("Student with this id not found :"+ addStudentToCourseDto.getStudentId()));
+                .orElseThrow(() -> new EntityNotFoundException("Student with this id not found :" + addStudentToCourseDto.getStudentId()));
 
-            course.getStudents().add(student);
-            student.getCourses().add(course);
-            studentRepository.save(student);
+        course.getStudents().add(student);
+        student.getCourses().add(course);
+        studentRepository.save(student);
     }
 
     @Override
     public void deleteStudentFromCourse(DeleteStudentFromCourseDto deleteStudentFromCourseDto) {
         Course course = courseRepository.findById(deleteStudentFromCourseDto.getCourseId())
-                .orElseThrow(()-> new EntityNotFoundException("Course with this id not found :"+ deleteStudentFromCourseDto.getCourseId()));
+                .orElseThrow(() -> new EntityNotFoundException("Course with this id not found :" + deleteStudentFromCourseDto.getCourseId()));
 
         Student student = studentRepository.findById(deleteStudentFromCourseDto.getStudentId())
-                .orElseThrow(()-> new EntityNotFoundException("Student with this id not found :"+ deleteStudentFromCourseDto.getStudentId()));
+                .orElseThrow(() -> new EntityNotFoundException("Student with this id not found :" + deleteStudentFromCourseDto.getStudentId()));
 
-            course.getStudents().remove(student);
-            student.getCourses().remove(course);
-            studentRepository.save(student);
+        course.getStudents().remove(student);
+        student.getCourses().remove(course);
+        studentRepository.save(student);
     }
 
     @Override
     public void addMasterToCourse(AddMasterToCourseDto addMasterToCourseDto) {
-       Course course = courseRepository.findById(addMasterToCourseDto.getCourseId())
-               .orElseThrow(()-> new EntityNotFoundException("Course with this id not found :"+ addMasterToCourseDto.getCourseId()));
+        Course course = courseRepository.findById(addMasterToCourseDto.getCourseId())
+                .orElseThrow(() -> new EntityNotFoundException("Course with this id not found :" + addMasterToCourseDto.getCourseId()));
 
-       Master master = masterRepository.findById(addMasterToCourseDto.getMasterId())
-               .orElseThrow(()-> new EntityNotFoundException("Master with this id not found :"+ addMasterToCourseDto.getMasterId()));
+        Master master = masterRepository.findById(addMasterToCourseDto.getMasterId())
+                .orElseThrow(() -> new EntityNotFoundException("Master with this id not found :" + addMasterToCourseDto.getMasterId()));
 
-            course.setMaster(master);
-            master.getCourses().add(course);
-            masterRepository.save(master);
+        course.setMaster(master);
+        master.getCourses().add(course);
+        masterRepository.save(master);
 
     }
 
@@ -132,8 +144,8 @@ public class CourseServiceImpl implements CourseService {
                 .orElseThrow(() -> new EntityNotFoundException("Course with this id not found :" + courseId));
         List<Question> questions = course.getQuestions();
         List<MultipleChoiceQuestion> multipleChoiceQuestions = new ArrayList<>();
-        for (Question question:questions){
-            if (question instanceof MultipleChoiceQuestion){
+        for (Question question : questions) {
+            if (question instanceof MultipleChoiceQuestion) {
                 multipleChoiceQuestions.add((MultipleChoiceQuestion) question);
             }
         }
@@ -146,8 +158,8 @@ public class CourseServiceImpl implements CourseService {
                 .orElseThrow(() -> new EntityNotFoundException("Course with this id not found :" + courseId));
         List<Question> questions = course.getQuestions();
         List<DescriptiveQuestion> descriptiveQuestions = new ArrayList<>();
-        for (Question question:questions){
-            if (question instanceof DescriptiveQuestion){
+        for (Question question : questions) {
+            if (question instanceof DescriptiveQuestion) {
                 descriptiveQuestions.add((DescriptiveQuestion) question);
             }
         }
@@ -167,8 +179,6 @@ public class CourseServiceImpl implements CourseService {
         courseRepository.save(course);
         questionRepository.save(question);
     }
-
-
 
 
 }

@@ -1,111 +1,80 @@
 package ir.maktabsharif.online_exam.controller;
 
-import ir.maktabsharif.online_exam.model.*;
-import ir.maktabsharif.online_exam.model.dto.*;
+import ir.maktabsharif.online_exam.model.DescriptiveQuestion;
+import ir.maktabsharif.online_exam.model.MultipleChoiceQuestion;
+import ir.maktabsharif.online_exam.model.Question;
+import ir.maktabsharif.online_exam.model.dto.ExamDto;
 import ir.maktabsharif.online_exam.model.dto.response.ApiResponseDto;
-import ir.maktabsharif.online_exam.service.*;
+import ir.maktabsharif.online_exam.model.dto.response.ExamDetailsDto;
+import ir.maktabsharif.online_exam.service.ExamService;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import java.security.Principal;
+
+import java.util.ArrayList;
 import java.util.List;
 
-@Controller
-@RequestMapping("/exam")
+@RestController
+@RequestMapping("/api/exam")
 public class ExamController {
     private final ExamService examService;
-    private final MasterService masterService;
-    private final CourseService courseService;
 
-    public ExamController(ExamService examService, MasterService masterService, CourseService courseService) {
+    public ExamController(ExamService examService) {
         this.examService = examService;
-        this.masterService = masterService;
-        this.courseService = courseService;
     }
 
-    @PostMapping("/{courseId}/save")
-    public ResponseEntity<ApiResponseDto> createExam(@PathVariable Long courseId,
-                                                     @RequestParam Long masterId,
-                                                     @RequestBody ExamDto examDto,
-                                                     Principal principal) {
-        String username = principal.getName();
-//        Master master = masterService.findByUsername(username);
-        examService.addExamToCourse(courseId, masterId, examDto);
-        String msg = "save.exam.success";
-        return ResponseEntity.ok(new ApiResponseDto(msg , true));
+    @PreAuthorize("hasRole('MASTER')")
+    @PostMapping("/exam/course/assign")
+    public ResponseEntity<ApiResponseDto> createExam(@RequestParam("masterId") Long masterId,
+                                                     @RequestParam("courseId") Long courseId,
+                                                     @Valid @RequestBody ExamDto examDto) {
+        examService.createExamForCourse(courseId, masterId, examDto);
+        String msg = "exam.create.success";
+        return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponseDto(msg, true));
     }
 
-    @GetMapping("/{courseId}/save")
-    public String showFormCreateExam(@PathVariable Long courseId, Principal principal, Model model) {
-        String username = principal.getName();
-        Master master = masterService.findByUsername(username);
-        model.addAttribute("exam", new ExamDto());
-        model.addAttribute("courseId", courseId);
-        model.addAttribute("masterId", master.getId());
-        return "exam/saveExam";
-    }
-
-    @PostMapping("/save")
-    public String createExam(@RequestParam Long masterId, @RequestParam("courseId") Long courseId,
-                             @Valid @ModelAttribute("exam") ExamDto examDto, BindingResult result) {
-        if (result.hasErrors()) {
-            return "exam/saveExam";
-        }
-        examService.addExamToCourse(courseId, masterId, examDto);
-        return "redirect:/exam/coursesForAddExam?success";
-    }
-
-
-    @GetMapping("/edit/{id}")
-    public String updateExamForm(@PathVariable Long id, Model model) {
-        Exam exam = examService.findById(id);
-        model.addAttribute("exam", exam);
-        model.addAttribute("examId", exam.getId());
-        return "exam/edit-exam";
-    }
-
-    @PostMapping("/edit/{id}")
-    public String updateExam(@PathVariable Long id, @Valid @ModelAttribute("exam") ExamDto examDto, BindingResult result) {
-        if (result.hasErrors()) {
-            return "exam/edit-exam";
-        }
+    @PreAuthorize("hasRole('MASTER')")
+    @PutMapping("/edit/{id}")
+    public ResponseEntity<ApiResponseDto> updateExam(@PathVariable Long id,
+                                                     @Valid @RequestBody ExamDto examDto) {
         boolean isUpdated = examService.updateExam(id, examDto);
         if (isUpdated) {
-            return "redirect:/master/panel?successUpdate";
+            String msg = "update.exam.success";
+            return ResponseEntity.ok(new ApiResponseDto(msg, true));
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        return "redirect:/master/panel?errorUpdate";
     }
-    //todo
-    @PostMapping("/delete/{id}")
-    public String deleteExam(@PathVariable Long id) {
+
+    @PreAuthorize("hasRole('MASTER')")
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<ApiResponseDto> deleteExam(@PathVariable Long id) {
         boolean isDeleted = examService.deleteExam(id);
         if (isDeleted) {
-            return "redirect:/master/panel?successDelete";
+            String msg = "delete.exam.success";
+            return ResponseEntity.ok(new ApiResponseDto(msg, true));
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        return "redirect:/master/panel?errorDelete";
     }
 
-
-
-    @GetMapping("/{courseId}/examsCourseForAddQuestion")
-    private String courseExams(@PathVariable Long courseId, Model model) {
-        Course course = courseService.findById(courseId);
-        model.addAttribute("exams", course.getExams());
-        model.addAttribute("courseId", courseId);
-        return "exam/examsOfCourseForAddQuestion";
+    @PreAuthorize("hasRole('MASTER')")
+    @GetMapping("/{courseId}/{examId}/questions/exam")
+    public ResponseEntity<List<Question>> getExamQuestions(@PathVariable Long courseId, @PathVariable Long examId) {
+        List<DescriptiveQuestion> descriptiveQuestions = examService.descriptiveQuestionsOfExam(examId);
+        List<MultipleChoiceQuestion> multipleChoiceQuestions = examService.multipleChoiceQuestionsOfExam(examId);
+        List<Question> questions = new ArrayList<>();
+        questions.addAll(multipleChoiceQuestions);
+        questions.addAll(descriptiveQuestions);
+        return ResponseEntity.ok(questions);
     }
 
-    @GetMapping("/coursesForAddExam")
-    public String masterCourses(Model model, Principal principal) {
-        String username = principal.getName();
-        Master master = masterService.findByUsername(username);
-        List<Course> courses = masterService.findMasterCourses(master.getId());
-
-        model.addAttribute("courses", courses);
-        return "exam/courses-for-add-exam";
+    @PreAuthorize("hasRole('MASTER')")
+    @GetMapping("/{examId}/exam/details")
+    private ResponseEntity<ExamDetailsDto> examDetails(@PathVariable Long examId) {
+        return ResponseEntity.ok(examService.examDetails(examId));
     }
 
 }

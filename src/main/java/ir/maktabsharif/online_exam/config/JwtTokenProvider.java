@@ -19,7 +19,8 @@ public class JwtTokenProvider {
     private Long validity;
 
     private Algorithm algorithm() {
-        return Algorithm.HMAC256(secretKey);
+        return Algorithm.HMAC256(secretKey); // chek algorithms
+        // رمز گذاری  private key and public key
     }
 
     public String generateToken(UserDetails userDetails){

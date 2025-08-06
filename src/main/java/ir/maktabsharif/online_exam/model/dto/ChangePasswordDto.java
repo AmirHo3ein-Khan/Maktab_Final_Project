@@ -7,5 +7,7 @@ import lombok.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CreateExamDto {
+public class ChangePasswordDto {
+    private String oldPassword;
+    private String newPassword;
 }

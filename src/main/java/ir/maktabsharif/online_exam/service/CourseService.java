@@ -6,6 +6,7 @@ import ir.maktabsharif.online_exam.model.MultipleChoiceQuestion;
 import ir.maktabsharif.online_exam.model.Student;
 import ir.maktabsharif.online_exam.model.dto.*;
 import ir.maktabsharif.online_exam.model.dto.questiondto.DeleteQuestionFromQuestionBankDto;
+import ir.maktabsharif.online_exam.model.dto.response.CourseResponseDto;
 
 import java.util.List;
 
@@ -14,7 +15,7 @@ public interface CourseService {
     void updateCourse(Long id , CourseRequestDto courseRequestDto);
     void updateMasterOfCourse(UpdateMasterOfCourseDto updateMasterOfCourseDto);
     void deleteCourse(Long id);
-    List<Course> findAll();
+    List<CourseResponseDto> findAll();
     void addStudentToCourse(AddStudentToCourseDto addStudentToCourseDto);
     void deleteStudentFromCourse(DeleteStudentFromCourseDto deleteStudentFromCourseDto);
     void addMasterToCourse(AddMasterToCourseDto addMasterToCourseDto);

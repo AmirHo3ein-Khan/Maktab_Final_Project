@@ -10,6 +10,7 @@ import ir.maktabsharif.online_exam.repository.*;
 import ir.maktabsharif.online_exam.service.StudentExamService;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -40,7 +41,7 @@ public class StudentExamServiceImpl implements StudentExamService {
     }
 
     @Override
-    public void startExam(StudentExamDto dto) {
+    public StudentExam startExam(StudentExamDto dto) {
         Student student = studentRepository.findById(dto.getStudentId())
                 .orElseThrow(() -> new EntityNotFoundException("Student with this id not found : " + dto.getStudentId()));
 
@@ -63,8 +64,10 @@ public class StudentExamServiceImpl implements StudentExamService {
                     .build();
             studentExamRepository.save(studentExam);
         }
+        return foundedStudentExam.get();
     }
 
+    @Override
     public void submitExam(Long studentId, Long examId) {
         Student student = studentRepository.findById(studentId)
                 .orElseThrow(() -> new EntityNotFoundException("Student with this id not found : " + studentId));
@@ -85,14 +88,15 @@ public class StudentExamServiceImpl implements StudentExamService {
     }
 
     @Override
-    public Optional<StudentExam> findStudentExam(Long studentId, Long examId) {
+    public StudentExam findStudentExam(Long studentId, Long examId) {
         Student student = studentRepository.findById(studentId)
                 .orElseThrow(() -> new EntityNotFoundException("Student with this id not found : " + studentId));
 
         Exam exam = examRepository.findById(examId)
                 .orElseThrow(() -> new EntityNotFoundException("Student with this id not found : " + examId));
 
-        return studentExamRepository.findByStudentAndExam(student, exam);
+        return studentExamRepository.findByStudentAndExam(student, exam)
+                .orElseThrow(() -> new EntityNotFoundException("Student not start this exam yet : " + examId));
     }
 
     @Override

@@ -3,6 +3,7 @@ package ir.maktabsharif.online_exam.service.impl;
 import ir.maktabsharif.online_exam.exception.EntityNotFoundException;
 import ir.maktabsharif.online_exam.model.*;
 import ir.maktabsharif.online_exam.model.dto.ExamDto;
+import ir.maktabsharif.online_exam.model.dto.response.ExamDetailsDto;
 import ir.maktabsharif.online_exam.model.enums.ExamState;
 import ir.maktabsharif.online_exam.repository.*;
 import ir.maktabsharif.online_exam.service.ExamService;
@@ -33,7 +34,7 @@ public class ExamServiceImpl implements ExamService {
     }
 
     @Override
-    public void addExamToCourse(Long courseId, Long masterId, ExamDto examDto) {
+    public void createExamForCourse(Long courseId, Long masterId, ExamDto examDto) {
         Master master = masterRepository.findById(masterId)
                 .orElseThrow(() -> new EntityNotFoundException("Master not found with this id: " + masterId));
 
@@ -136,6 +137,25 @@ public class ExamServiceImpl implements ExamService {
             }
         }
         return descriptiveQuestions;
+    }
+
+    public ExamDetailsDto examDetails(Long examId) {
+        Exam exam = examRepository.findById(examId)
+                .orElseThrow(() -> new EntityNotFoundException("Exam not found with this id:" + examId));
+        List<DescriptiveQuestion> descriptiveQuestions = descriptiveQuestionsOfExam(examId);
+        List<MultipleChoiceQuestion> multipleChoiceQuestions = multipleChoiceQuestionsOfExam(examId);
+        List<Question> allQuestions = new ArrayList<>();
+        allQuestions.addAll(multipleChoiceQuestions);
+        allQuestions.addAll(descriptiveQuestions);
+
+        return ExamDetailsDto.builder()
+                .examTitle(exam.getTitle())
+                .examDescription(exam.getDescription())
+                .examDate(exam.getExamDate())
+                .examTime(exam.getExamTime())
+                .courseName(exam.getCourse().getTitle())
+                .numberOfQuestions(allQuestions.size())
+                .build();
     }
 
 

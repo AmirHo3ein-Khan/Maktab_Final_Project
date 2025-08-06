@@ -1,6 +1,5 @@
 package ir.maktabsharif.online_exam.repository;
 
-import ir.maktabsharif.online_exam.controller.QuestionController;
 import ir.maktabsharif.online_exam.model.Answer;
 import ir.maktabsharif.online_exam.model.Option;
 import ir.maktabsharif.online_exam.model.QuestionExam;

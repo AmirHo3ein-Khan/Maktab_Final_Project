@@ -1,62 +1,66 @@
 package ir.maktabsharif.online_exam.exception;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-@ControllerAdvice
+@RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    @Autowired
+    private MessageSource messageSource;
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ExceptionResponse> handleBadCredentials(BadCredentialsException ex) {
+        return new ResponseEntity<>(new ExceptionResponse(ex.getMessage()), HttpStatus.UNAUTHORIZED);
+    }
+
     @ExceptionHandler(EntityNotFoundException.class)
-    public String handleEntityNotFoundException(EntityNotFoundException ex, RedirectAttributes redirectAttributes) {
-        redirectAttributes.addFlashAttribute("exceptionError", "Not found! Message: " + ex.getMessage());
-        return "redirect:/exceptionPage";
+    public ResponseEntity<ExceptionResponse> handleEntityNotFoundException(EntityNotFoundException ex) {
+        return new ResponseEntity<>(new ExceptionResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(QuestionAlreadyExistsInExamException.class)
-    public String handleQuestionAlreadyExistsInExamException(QuestionAlreadyExistsInExamException ex, RedirectAttributes redirectAttributes) {
-        redirectAttributes.addFlashAttribute("exceptionError", "Error! Message: " + ex.getMessage());
-        return "redirect:/exceptionPage";
+    public ResponseEntity<ExceptionResponse> handleQuestionAlreadyExistsInExamException(QuestionAlreadyExistsInExamException ex) {
+        return new ResponseEntity<>(new ExceptionResponse(ex.getMessage()), HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(ScoreOfAnswerException.class)
-    public String handleScoreOfAnswerException(ScoreOfAnswerException ex, RedirectAttributes redirectAttributes) {
-        redirectAttributes.addFlashAttribute("exceptionError", "Error! Message: " + ex.getMessage());
-        return "redirect:/exceptionPage";
+    public ResponseEntity<ExceptionResponse> handleScoreOfAnswerException(ScoreOfAnswerException ex) {
+        return new ResponseEntity<>(new ExceptionResponse(ex.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(AnswerTypeException.class)
-    public String handleAnswerTypeException(AnswerTypeException ex, RedirectAttributes redirectAttributes) {
-        redirectAttributes.addFlashAttribute("exceptionError", "Error! Message: " + ex.getMessage());
-        return "redirect:/exceptionPage";
+    public ResponseEntity<ExceptionResponse> handleAnswerTypeException(AnswerTypeException ex) {
+        return new ResponseEntity<>(new ExceptionResponse(ex.getMessage()), HttpStatus.UNSUPPORTED_MEDIA_TYPE);
     }
 
     @ExceptionHandler(StudentCompletedTheExamException.class)
-    public String handleStudentCompletedTheExamException(StudentCompletedTheExamException ex, RedirectAttributes redirectAttributes) {
-        redirectAttributes.addFlashAttribute("exceptionError", "Error! Message: " + ex.getMessage());
-        return "redirect:/exceptionPage";
+    public ResponseEntity<ExceptionResponse> handleStudentCompletedTheExamException(StudentCompletedTheExamException ex) {
+        return new ResponseEntity<>(new ExceptionResponse(ex.getMessage()), HttpStatus.CONFLICT);
     }
     @ExceptionHandler(QuestionNotFoundInExamException.class)
-    public String handleQuestionNotFoundInExamException(QuestionNotFoundInExamException ex, RedirectAttributes redirectAttributes) {
-        redirectAttributes.addFlashAttribute("exceptionError", "Error! Message: " + ex.getMessage());
-        return "redirect:/exceptionPage";
+    public ResponseEntity<ExceptionResponse> handleQuestionNotFoundInExamException(QuestionNotFoundInExamException ex) {
+        return new ResponseEntity<>(new ExceptionResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
     }
     @ExceptionHandler(NotCompletedExamException.class)
-    public String handleNotCompletedExamException(NotCompletedExamException ex, RedirectAttributes redirectAttributes) {
-        redirectAttributes.addFlashAttribute("exceptionError", "Error! Message: " + ex.getMessage());
-        return "redirect:/exceptionPage";
+    public ResponseEntity<ExceptionResponse> handleNotCompletedExamException(NotCompletedExamException ex) {
+        return new ResponseEntity<>(new ExceptionResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(StudentSubmittedTheExamException.class)
-    public String handleStudentSubmittedTheExamException(StudentSubmittedTheExamException ex, RedirectAttributes redirectAttributes) {
-        redirectAttributes.addFlashAttribute("exceptionError", "Error! Message: " + ex.getMessage());
-        return "redirect:/exceptionPage";
+    public ResponseEntity<ExceptionResponse> handleStudentSubmittedTheExamException(StudentSubmittedTheExamException ex) {
+        return new ResponseEntity<>(new ExceptionResponse(ex.getMessage()), HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(Exception.class)
-    public String handleException(Exception ex, RedirectAttributes redirectAttributes) {
-        redirectAttributes.addFlashAttribute("exceptionError", "Something went wrong! Message: " + ex.getMessage());
-        return "redirect:/exceptionPage";
+    public ResponseEntity<ExceptionResponse> handleException(Exception ex) {
+        return new ResponseEntity<>(new ExceptionResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
     }
 }

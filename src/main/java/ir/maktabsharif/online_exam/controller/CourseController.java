@@ -1,138 +1,102 @@
 package ir.maktabsharif.online_exam.controller;
 
-import ir.maktabsharif.online_exam.model.Course;
+import ir.maktabsharif.online_exam.model.DescriptiveQuestion;
+import ir.maktabsharif.online_exam.model.MultipleChoiceQuestion;
+import ir.maktabsharif.online_exam.model.Question;
 import ir.maktabsharif.online_exam.model.dto.*;
 import ir.maktabsharif.online_exam.model.dto.response.ApiResponseDto;
+import ir.maktabsharif.online_exam.model.dto.response.CourseResponseDto;
+import ir.maktabsharif.online_exam.model.dto.response.QuestionResponseDto;
 import ir.maktabsharif.online_exam.service.CourseService;
-import ir.maktabsharif.online_exam.service.MasterService;
-import ir.maktabsharif.online_exam.service.StudentService;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-@Controller
-@RequestMapping("/course")
+import java.util.ArrayList;
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/course")
 public class CourseController {
     private final CourseService courseService;
-    private final MasterService masterService;
-    private final StudentService studentService;
 
-    public CourseController(CourseService courseService, MasterService masterService, StudentService studentService) {
+    public CourseController(CourseService courseService) {
         this.courseService = courseService;
-        this.masterService = masterService;
-        this.studentService = studentService;
     }
 
-    @GetMapping("/save")
-    public String createCourseForm(Model model) {
-        model.addAttribute("course", new CourseRequestDto());
-        return "course/saveCourse";
+    @PreAuthorize("hasRole('MANAGER')")
+    @PostMapping("/save")
+    public ResponseEntity<ApiResponseDto> createCourse(@Valid @RequestBody CourseRequestDto courseRequestDto) {
+        courseService.createCourse(courseRequestDto);
+        String msg = "course.saved.success";
+        ApiResponseDto body = new ApiResponseDto(msg , true);
+        return ResponseEntity.status(HttpStatus.CREATED).body(body);
     }
 
-
-//    @PostMapping("/save")
-//    public ResponseEntity<ApiResponseDto> createCourse(@Valid @ModelAttribute("course") CourseRequestDto courseRequestDto, BindingResult result) {
-//
-//        courseService.createCourse(courseRequestDto);
-//    }
-
-    @GetMapping("/edit/{id}")
-    public String updateCourseForm(@PathVariable Long id , Model model) {
-        Course course = courseService.findById(id);
-        model.addAttribute("course" , course);
-        model.addAttribute("courseId" , course.getId());
-        return "course/updateCourse";
-    }
-
-    @PostMapping("/edit/{id}")
-    public String updateCourse(@PathVariable Long id ,@Valid @ModelAttribute("course") CourseRequestDto courseRequestDto, BindingResult result) {
-        if (result.hasErrors()){
-            return "course/updateCourse";
-        }
+    @PreAuthorize("hasRole('MANAGER')")
+    @PutMapping("/edit/{id}")
+    public ResponseEntity<ApiResponseDto> updateCourse(@PathVariable Long id , @Valid @RequestBody CourseRequestDto courseRequestDto) {
         courseService.updateCourse(id , courseRequestDto);
-        return "redirect:/course/coursesForDetails?successUpdate";
+        String msg = "course.update.success";
+        return ResponseEntity.ok(new ApiResponseDto(msg , true));
     }
 
-    //todo bug!!!!!!!!!!
-    @GetMapping("/{courseId}/editMaster")
-    public String showMastersForUpdateCourse(@PathVariable Long courseId, Model model) {
-        model.addAttribute("masters", masterService.findAll());
-        model.addAttribute("courseId", courseId);
-        return "course/mastersForUpdateCourse";
-    }
-    @PostMapping("/editMaster")
-    public String updateMasterOfCourse(@ModelAttribute UpdateMasterOfCourseDto updateMasterOfCourseDto) {
+    @PreAuthorize("hasRole('MANAGER')")
+    @PostMapping("/master/course/update")
+    public ResponseEntity<ApiResponseDto> updateMasterOfCourse(@RequestBody UpdateMasterOfCourseDto updateMasterOfCourseDto) {
         courseService.updateMasterOfCourse(updateMasterOfCourseDto);
-        return "redirect:/course/coursesForDetails?successUpdate";
+        return ResponseEntity.ok(new ApiResponseDto("course.update.success", true));
     }
 
-    @GetMapping("/delete/{id}")
-    public String deleteCourse(@PathVariable Long id) {
-        courseService.deleteCourse(id);
-        return "redirect:/course/coursesForDetails?successDelete";
-    }
-
-
-    @GetMapping("/coursesForAddMaster")
-    public String showCoursesForAddMaster(Model model) {
-        model.addAttribute("courses", courseService.findAll());
-        return "course/coursesForAddMaster";
-    }
-
-    @GetMapping("/{courseId}/addMaster")
-    public String showMastersForCourse(@PathVariable Long courseId, Model model) {
-        model.addAttribute("masters", masterService.findAll());
-        model.addAttribute("courseId", courseId);
-        return "course/masters";
-    }
-
-    @PostMapping("/addMasterToCourse")
-    public String addMasterToCourse(@ModelAttribute AddMasterToCourseDto addMasterToCourseDto) {
+    @PreAuthorize("hasRole('MANAGER')")
+    @PostMapping("/courses/masters/assign")
+    public ResponseEntity<ApiResponseDto> addMasterToCourse(@RequestBody AddMasterToCourseDto addMasterToCourseDto) {
         courseService.addMasterToCourse(addMasterToCourseDto);
-        return "redirect:/course/coursesForAddMaster?success";
+        String msg = "course.add.master.saved";
+        return ResponseEntity.ok(new ApiResponseDto(msg , true));
     }
 
-    @GetMapping("/coursesForAddStudent")
-    public String showCoursesForAddStudent(Model model) {
-        model.addAttribute("courses", courseService.findAll());
-        return "course/coursesForAddStudent";
-    }
-
-
-    @GetMapping("/{courseId}/addStudent")
-    public String showStudentsForCourse(@PathVariable Long courseId, Model model) {
-        model.addAttribute("students", studentService.findAll());
-        model.addAttribute("courseId", courseId);
-        return "course/students";
-    }
-
-    @PostMapping("/addStudentToCourse")
-    public String addStudentToCourse(@ModelAttribute AddStudentToCourseDto addStudentToCourseDto) {
+    @PreAuthorize("hasRole('MANAGER')")
+    @PostMapping("/courses/student/assign")
+    public ResponseEntity<ApiResponseDto> addStudentToCourse(@RequestBody AddStudentToCourseDto addStudentToCourseDto) {
         courseService.addStudentToCourse(addStudentToCourseDto);
-        return "redirect:/course/coursesForAddStudent?success";
+        String msg = "course.add.student.saved";
+        return ResponseEntity.ok(new ApiResponseDto(msg , true));
     }
 
-    @GetMapping("/coursesForDetails")
-    public String showCourses(Model model) {
-        model.addAttribute("courses", courseService.findAll());
-        return "course/coursesForDetails";
+    @PreAuthorize("hasRole('MANAGER')")
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<ApiResponseDto> deleteCourse(@PathVariable Long id) {
+        courseService.deleteCourse(id);
+        String msg = "course.delete.success";
+        return ResponseEntity.ok(new ApiResponseDto(msg , true));
     }
 
-    @GetMapping("/{courseId}/details")
-    public String showCourseDetails(@PathVariable Long courseId, Model model) {
-        Course course = courseService.findById(courseId);
-        model.addAttribute("course", course);
-        model.addAttribute("students", course.getStudents());
-        model.addAttribute("master", course.getMaster());
-        return "course/course-details";
+    @PreAuthorize("hasRole('MANAGER')")
+    @GetMapping("/find/all")
+    public ResponseEntity<List<CourseResponseDto>> getAllCourse() {
+        List<CourseResponseDto> courses = courseService.findAll();
+        return ResponseEntity.ok(courses);
     }
 
-    @PostMapping("/deleteStudentFromCourse")
+    @PreAuthorize("hasRole('MANAGER')")
+    @PostMapping("/delete/student/course")
     public String deleteStudentFromCourse(@ModelAttribute DeleteStudentFromCourseDto deleteStudentFromCourseDto) {
         courseService.deleteStudentFromCourse(deleteStudentFromCourseDto);
         return "redirect:/course/coursesForDetails?success";
+    }
+
+    // todo : add the login in service
+    @PreAuthorize("hasRole('MANAGER')")
+    @GetMapping("/{courseId}/course/question/bank")
+    private ResponseEntity<List<QuestionResponseDto>> courseQuestionBank(@PathVariable Long courseId) {
+        List<MultipleChoiceQuestion> multipleChoiceQuestions = courseService.mcqBank(courseId);
+        List<DescriptiveQuestion> descriptiveQuestions = courseService.dqBank(courseId);
+        List<Question> questions = new ArrayList<>();
+        questions.addAll(multipleChoiceQuestions);
+        questions.addAll(descriptiveQuestions);
+        return null;
     }
 }
