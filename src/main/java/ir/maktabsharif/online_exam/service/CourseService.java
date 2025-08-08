@@ -7,6 +7,7 @@ import ir.maktabsharif.online_exam.model.Student;
 import ir.maktabsharif.online_exam.model.dto.*;
 import ir.maktabsharif.online_exam.model.dto.questiondto.DeleteQuestionFromQuestionBankDto;
 import ir.maktabsharif.online_exam.model.dto.response.CourseResponseDto;
+import ir.maktabsharif.online_exam.model.dto.response.QuestionResponseDto;
 
 import java.util.List;
 
@@ -23,5 +24,6 @@ public interface CourseService {
     List<MultipleChoiceQuestion> mcqBank(Long courseId);
     List<DescriptiveQuestion> dqBank(Long courseId);
     void deleteQuestionFromQuestionBank(DeleteQuestionFromQuestionBankDto dto);
+    List<QuestionResponseDto> getCourseQuestionBank(Long courseId);
 
 }

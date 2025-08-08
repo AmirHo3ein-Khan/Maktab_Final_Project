@@ -2,6 +2,8 @@ package ir.maktabsharif.online_exam.model.dto.response;
 
 import lombok.*;
 
+import java.util.List;
+
 @Builder
 @Getter
 @Setter
@@ -13,5 +15,7 @@ public class QuestionResponseDto {
     private String questionText;
 
     private Double defaultScore;
+
+    private List<OptionResponseDto> options;
 
 }

@@ -29,8 +29,4 @@ public class Option extends BaseEntity<Long> {
 
     @OneToMany(mappedBy = "option")
     private List<MultipleChoiceAnswer> answers = new ArrayList<>();
-//    @Override
-//    public String toString() {
-//        return optionText; // This will make it return the option text when the object is printed
-//    }
 }

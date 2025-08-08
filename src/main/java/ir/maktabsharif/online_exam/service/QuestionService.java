@@ -10,8 +10,8 @@ import ir.maktabsharif.online_exam.model.dto.questiondto.*;
 import java.util.List;
 
 public interface QuestionService {
-    void createMultipleChoiceQuestion(Long courseId , Long examId , MultipleChoiceQuestionDto multipleChoiceQuestionDto);
-    void createDescriptiveQuestion(Long courseId , Long examId , DescriptiveQuestionDto dto);
+    void createMultipleChoiceQuestion(Long examId , MultipleChoiceQuestionDto multipleChoiceQuestionDto);
+    void createDescriptiveQuestion(Long examId , DescriptiveQuestionDto dto);
     void addQuestionToExam(AddQuestionToExamDto dto);
     void deleteQuestionFromExam(DeleteQuestionFromExamDto dto);
     void createMultipleChoiceQuestionForBank(Long courseId,MultipleChoiceQuestionDto multipleChoiceQuestionDto);

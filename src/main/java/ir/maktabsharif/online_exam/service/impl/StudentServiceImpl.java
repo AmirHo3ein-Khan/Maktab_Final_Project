@@ -6,6 +6,7 @@ import ir.maktabsharif.online_exam.model.Master;
 import ir.maktabsharif.online_exam.model.Role;
 import ir.maktabsharif.online_exam.model.Student;
 import ir.maktabsharif.online_exam.model.dto.StudentDto;
+import ir.maktabsharif.online_exam.model.dto.response.CourseResponseDto;
 import ir.maktabsharif.online_exam.model.enums.RegisterState;
 import ir.maktabsharif.online_exam.repository.CourseRepository;
 import ir.maktabsharif.online_exam.repository.RoleRepository;
@@ -14,6 +15,7 @@ import ir.maktabsharif.online_exam.service.StudentService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -78,7 +80,7 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public Student findById(Long id) {
         return studentRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Student not found with this id"+ id));
+                .orElseThrow(() -> new EntityNotFoundException("Student not found with this id" + id));
     }
 
 
@@ -88,15 +90,25 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public List<Course> coursesOfStudent(Long studentId) {
+    public List<CourseResponseDto> coursesOfStudent(Long studentId) {
         Student student = studentRepository.findById(studentId)
                 .orElseThrow(() -> new EntityNotFoundException("Student not found with this id" + studentId));
-        return courseRepository.findCoursesByStudent(student);
+        List<Course> coursesByStudent = courseRepository.findCoursesByStudent(student);
+        List<CourseResponseDto> courses = new ArrayList<>();
+        for(Course course : coursesByStudent){
+            courses.add(CourseResponseDto.builder()
+                    .title(course.getTitle())
+                    .courseFinishedDate(course.getCourseFinishedDate())
+                    .courseStartedDate(course.getCourseStartedDate())
+                    .unit(course.getUnit())
+                    .build());
+        }
+        return courses;
     }
 
     @Override
     public Student findByUsername(String username) {
         return studentRepository.findByUsername(username)
-                .orElseThrow(() -> new EntityNotFoundException("Student not found with this username "+ username));
+                .orElseThrow(() -> new EntityNotFoundException("Student not found with this username " + username));
     }
 }

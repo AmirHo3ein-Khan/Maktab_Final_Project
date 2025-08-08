@@ -5,6 +5,7 @@ import ir.maktabsharif.online_exam.exception.StudentCompletedTheExamException;
 import ir.maktabsharif.online_exam.exception.StudentSubmittedTheExamException;
 import ir.maktabsharif.online_exam.model.*;
 import ir.maktabsharif.online_exam.model.dto.StudentExamDto;
+import ir.maktabsharif.online_exam.model.dto.response.ExamResponseDto;
 import ir.maktabsharif.online_exam.model.enums.StudentExamStatus;
 import ir.maktabsharif.online_exam.repository.*;
 import ir.maktabsharif.online_exam.service.StudentExamService;
@@ -100,12 +101,26 @@ public class StudentExamServiceImpl implements StudentExamService {
     }
 
     @Override
-    public List<Exam> findCompletedExamsOfStudent(Long studentId) {
+    public List<ExamResponseDto> findCompletedExamsOfStudent(Long studentId) {
         Student student = studentRepository.findById(studentId)
                 .orElseThrow(() -> new EntityNotFoundException("Student with this id not found : " + studentId));
-        List<StudentExam> studentExams = studentExamRepository.findByStudentAndStudentExamStatus(student, StudentExamStatus.COMPLETED);
+
+        List<StudentExam> studentExams = studentExamRepository.findByStudentAndStudentExamStatus(
+                student,
+                StudentExamStatus.COMPLETED
+        );
+
         return studentExams.stream()
                 .map(StudentExam::getExam)
+                .map(exam -> ExamResponseDto.builder()
+                        .examTitle(exam.getTitle())
+                        .examDescription(exam.getDescription())
+                        .examDate(exam.getExamDate())
+                        .examTime(exam.getExamTime())
+                        .numberOfQuestions(exam.getQuestionExams().size())
+                        .courseName(exam.getCourse().getTitle())
+                        .build()
+                )
                 .collect(Collectors.toList());
     }
 

@@ -10,6 +10,5 @@ import lombok.*;
 public class AddQuestionToExamDto {
     private Long examId;
     private Long questionId;
-    private Long questionExamId;
     private Double score;
 }

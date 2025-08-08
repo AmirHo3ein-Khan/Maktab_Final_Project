@@ -34,13 +34,13 @@ public class QuestionServiceImpl implements QuestionService {
         this.examRepository = examRepository;
     }
 
-    public void createMultipleChoiceQuestion(Long courseId, Long examId, MultipleChoiceQuestionDto dto) {
-        Course course = courseRepository.findById(courseId)
-                .orElseThrow(() -> new EntityNotFoundException("Course with this id not found: " + courseId));
+    public void createMultipleChoiceQuestion(Long examId, MultipleChoiceQuestionDto dto) {
 
         Exam exam = examRepository.findById(examId)
                 .orElseThrow(() -> new EntityNotFoundException("Exam with this id not found: " + examId));
 
+        Course course = courseRepository.findById(exam.getCourse().getId())
+                .orElseThrow(() -> new EntityNotFoundException("Course with this id not found: " + exam.getCourse().getId()));
 
         MultipleChoiceQuestion multipleChoiceQuestion = MultipleChoiceQuestion.builder()
                 .questionText(dto.getQuestionText())
@@ -77,13 +77,13 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
-    public void createDescriptiveQuestion(Long courseId, Long examId, DescriptiveQuestionDto dto) {
-        Course course = courseRepository.findById(courseId)
-                .orElseThrow(() -> new EntityNotFoundException("Course with this id not found: " + courseId));
-
+    public void createDescriptiveQuestion(Long examId, DescriptiveQuestionDto dto) {
 
         Exam exam = examRepository.findById(examId)
                 .orElseThrow(() -> new EntityNotFoundException("Exam not found with this id: " + examId));
+
+        Course course = courseRepository.findById(exam.getCourse().getId())
+                .orElseThrow(() -> new EntityNotFoundException("Course with this id not found: " + exam.getCourse().getId()));
 
         DescriptiveQuestion descriptiveQuestion = DescriptiveQuestion.builder()
                 .questionText(dto.getQuestionText())

@@ -3,19 +3,17 @@ package ir.maktabsharif.online_exam.model.dto.response;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Builder
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ExamDetailsDto {
-    private String courseName;
+public class ExamResponseDto {
     private String examTitle;
     private String examDescription;
-    private Integer numberOfQuestions;
     private LocalDate examDate;
     private Integer examTime;
-
+    private Integer numberOfQuestions;
+    private String courseName;
 }

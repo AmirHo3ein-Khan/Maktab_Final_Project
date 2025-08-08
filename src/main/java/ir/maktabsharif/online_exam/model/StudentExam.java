@@ -10,6 +10,7 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Getter
@@ -29,4 +30,7 @@ public class StudentExam extends BaseEntity<Long> {
     private LocalDateTime startedAt;
     private LocalDateTime endAt;
     private Double examScoreForStudent;
+    @ElementCollection
+    private List<Long> questionOrder;
+    private Integer currentQuestion;
 }

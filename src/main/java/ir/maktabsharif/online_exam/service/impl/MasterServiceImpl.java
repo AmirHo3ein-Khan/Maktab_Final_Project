@@ -5,6 +5,7 @@ import ir.maktabsharif.online_exam.model.Course;
 import ir.maktabsharif.online_exam.model.Master;
 import ir.maktabsharif.online_exam.model.Role;
 import ir.maktabsharif.online_exam.model.dto.MasterDto;
+import ir.maktabsharif.online_exam.model.dto.response.CourseResponseDto;
 import ir.maktabsharif.online_exam.model.enums.RegisterState;
 import ir.maktabsharif.online_exam.repository.CourseRepository;
 import ir.maktabsharif.online_exam.repository.MasterRepository;
@@ -14,10 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.io.UnsupportedEncodingException;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class MasterServiceImpl implements MasterService {
@@ -86,9 +84,19 @@ public class MasterServiceImpl implements MasterService {
     }
 
     @Override
-    public List<Course> findMasterCourses(Long masterId) {
+    public List<CourseResponseDto> findMasterCourses(Long masterId) {
         Master master = findById(masterId);
-        return courseRepository.findByMaster(master);
+        List<Course> masterCourses = courseRepository.findByMaster(master);
+        List<CourseResponseDto> courseDtoList = new ArrayList<>();
+        for (Course course: masterCourses){
+            courseDtoList.add(CourseResponseDto.builder()
+                    .title(course.getTitle())
+                    .courseStartedDate(course.getCourseStartedDate())
+                    .courseFinishedDate(course.getCourseFinishedDate())
+                    .unit(course.getUnit())
+                    .build());
+        }
+        return courseDtoList;
     }
 
     @Override

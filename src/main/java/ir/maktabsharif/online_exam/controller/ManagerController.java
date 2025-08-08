@@ -2,6 +2,7 @@ package ir.maktabsharif.online_exam.controller;
 
 import ir.maktabsharif.online_exam.model.User;
 import ir.maktabsharif.online_exam.model.dto.response.ApiResponseDto;
+import ir.maktabsharif.online_exam.model.dto.response.UserResponseDto;
 import ir.maktabsharif.online_exam.service.RoleService;
 import ir.maktabsharif.online_exam.service.UserService;
 import org.springframework.http.ResponseEntity;
@@ -14,11 +15,9 @@ import java.util.List;
 @RequestMapping("/api/manager")
 public class ManagerController {
     private final UserService userService;
-    private final RoleService roleService;
 
-    public ManagerController(UserService userService, RoleService roleService) {
+    public ManagerController(UserService userService) {
         this.userService = userService;
-        this.roleService = roleService;
     }
 
     @PreAuthorize("hasRole('MANAGER')")
@@ -39,15 +38,15 @@ public class ManagerController {
 
     @PreAuthorize("hasRole('MANAGER')")
     @GetMapping("/search")
-    public ResponseEntity<List<User>> searchUser(@RequestParam(name = "keyword", required = false) String keyword) {
-        List<User> users = userService.searchUsers(keyword);
+    public ResponseEntity<List<UserResponseDto>> searchUser(@RequestParam(name = "keyword", required = false) String keyword) {
+        List<UserResponseDto> users = userService.searchUsers(keyword);
         return ResponseEntity.ok(users);
     }
 
     @PreAuthorize("hasRole('MANAGER')")
     @GetMapping("/filter")
-    public ResponseEntity<List<User>> filterUsers(@RequestParam(required = false) String role, @RequestParam String name) {
-        List<User> users = userService.filterByRoleAndName(role, name);
+    public ResponseEntity<List<UserResponseDto>> filterUsers(@RequestParam(required = false) String role, @RequestParam String name) {
+        List<UserResponseDto> users = userService.filterByRoleAndName(role, name);
         return ResponseEntity.ok(users);
     }
 }

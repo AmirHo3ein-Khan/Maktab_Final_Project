@@ -4,8 +4,10 @@ import ir.maktabsharif.online_exam.model.DescriptiveQuestion;
 import ir.maktabsharif.online_exam.model.MultipleChoiceQuestion;
 import ir.maktabsharif.online_exam.model.Question;
 import ir.maktabsharif.online_exam.model.dto.ExamDto;
+import ir.maktabsharif.online_exam.model.dto.request.ExamRequestDto;
 import ir.maktabsharif.online_exam.model.dto.response.ApiResponseDto;
 import ir.maktabsharif.online_exam.model.dto.response.ExamDetailsDto;
+import ir.maktabsharif.online_exam.model.dto.response.QuestionResponseDto;
 import ir.maktabsharif.online_exam.service.ExamService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -27,10 +29,8 @@ public class ExamController {
 
     @PreAuthorize("hasRole('MASTER')")
     @PostMapping("/exam/course/assign")
-    public ResponseEntity<ApiResponseDto> createExam(@RequestParam("masterId") Long masterId,
-                                                     @RequestParam("courseId") Long courseId,
-                                                     @Valid @RequestBody ExamDto examDto) {
-        examService.createExamForCourse(courseId, masterId, examDto);
+    public ResponseEntity<ApiResponseDto> createExam(@Valid @RequestBody ExamRequestDto examDto) {
+        examService.createExamForCourse(examDto);
         String msg = "exam.create.success";
         return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponseDto(msg, true));
     }
@@ -61,19 +61,15 @@ public class ExamController {
     }
 
     @PreAuthorize("hasRole('MASTER')")
-    @GetMapping("/{courseId}/{examId}/questions/exam")
-    public ResponseEntity<List<Question>> getExamQuestions(@PathVariable Long courseId, @PathVariable Long examId) {
-        List<DescriptiveQuestion> descriptiveQuestions = examService.descriptiveQuestionsOfExam(examId);
-        List<MultipleChoiceQuestion> multipleChoiceQuestions = examService.multipleChoiceQuestionsOfExam(examId);
-        List<Question> questions = new ArrayList<>();
-        questions.addAll(multipleChoiceQuestions);
-        questions.addAll(descriptiveQuestions);
-        return ResponseEntity.ok(questions);
+    @GetMapping("/{examId}/questions/exam")
+    public ResponseEntity<List<QuestionResponseDto>> getExamQuestions( @PathVariable Long examId) {
+        List<QuestionResponseDto> questionsOfExam = examService.getQuestionsOfExam(examId);
+        return ResponseEntity.ok(questionsOfExam);
     }
 
     @PreAuthorize("hasRole('MASTER')")
     @GetMapping("/{examId}/exam/details")
-    private ResponseEntity<ExamDetailsDto> examDetails(@PathVariable Long examId) {
+    public ResponseEntity<ExamDetailsDto> examDetails(@PathVariable Long examId) {
         return ResponseEntity.ok(examService.examDetails(examId));
     }
 

@@ -3,7 +3,11 @@ package ir.maktabsharif.online_exam.service.impl;
 import ir.maktabsharif.online_exam.exception.EntityNotFoundException;
 import ir.maktabsharif.online_exam.model.*;
 import ir.maktabsharif.online_exam.model.dto.ExamDto;
+import ir.maktabsharif.online_exam.model.dto.request.ExamRequestDto;
 import ir.maktabsharif.online_exam.model.dto.response.ExamDetailsDto;
+import ir.maktabsharif.online_exam.model.dto.response.ExamResponseDto;
+import ir.maktabsharif.online_exam.model.dto.response.OptionResponseDto;
+import ir.maktabsharif.online_exam.model.dto.response.QuestionResponseDto;
 import ir.maktabsharif.online_exam.model.enums.ExamState;
 import ir.maktabsharif.online_exam.repository.*;
 import ir.maktabsharif.online_exam.service.ExamService;
@@ -13,6 +17,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ExamServiceImpl implements ExamService {
@@ -34,12 +39,12 @@ public class ExamServiceImpl implements ExamService {
     }
 
     @Override
-    public void createExamForCourse(Long courseId, Long masterId, ExamDto examDto) {
-        Master master = masterRepository.findById(masterId)
-                .orElseThrow(() -> new EntityNotFoundException("Master not found with this id: " + masterId));
+    public void createExamForCourse(ExamRequestDto examRequestDto) {
+        Master master = masterRepository.findById(examRequestDto.getMasterId())
+                .orElseThrow(() -> new EntityNotFoundException("Master not found with this id: " + examRequestDto.getMasterId()));
 
         LocalDate today = LocalDate.now();
-        LocalDate examDate = examDto.getExamDate();
+        LocalDate examDate = examRequestDto.getExamDate();
         ExamState examState;
 
         if (examDate.isAfter(today)) {
@@ -51,15 +56,15 @@ public class ExamServiceImpl implements ExamService {
         }
 
         Exam exam = Exam.builder()
-                .title(examDto.getTitle())
-                .description(examDto.getDescription())
-                .examTime(examDto.getExamTime())
-                .examDate(examDto.getExamDate())
+                .title(examRequestDto.getTitle())
+                .description(examRequestDto.getDescription())
+                .examTime(examRequestDto.getExamTime())
+                .examDate(examRequestDto.getExamDate())
                 .examState(examState)
                 .master(master)
                 .build();
-        Course course = courseRepository.findById(courseId)
-                .orElseThrow(() -> new EntityNotFoundException("Course not found with this id: " + courseId));
+        Course course = courseRepository.findById(examRequestDto.getCourseId())
+                .orElseThrow(() -> new EntityNotFoundException("Course not found with this id: " + examRequestDto.getCourseId()));
 
         exam.setCourse(course);
         examRepository.save(exam);
@@ -158,5 +163,64 @@ public class ExamServiceImpl implements ExamService {
                 .build();
     }
 
+    @Override
+    public List<QuestionResponseDto> getQuestionsOfExam(Long examId) {
+        List<DescriptiveQuestion> descriptiveQuestions = descriptiveQuestionsOfExam(examId);
+        List<MultipleChoiceQuestion> multipleChoiceQuestions = multipleChoiceQuestionsOfExam(examId);
 
+        List<QuestionResponseDto> questions = new ArrayList<>();
+
+        for (DescriptiveQuestion question : descriptiveQuestions) {
+            questions.add(
+                    QuestionResponseDto.builder()
+                            .title(question.getTitle())
+                            .questionText(question.getQuestionText())
+                            .defaultScore(question.getDefaultScore())
+                            .build()
+            );
+        }
+
+        for (MultipleChoiceQuestion question : multipleChoiceQuestions) {
+            List<OptionResponseDto> optionDtoList = question.getOptions()
+                    .stream()
+                    .map(option -> OptionResponseDto.builder()
+                            .optionText(option.getOptionText())
+                            .isCorrect(option.isCorrect())
+                            .build()
+                    )
+                    .collect(Collectors.toList());
+
+            questions.add(
+                    QuestionResponseDto.builder()
+                            .title(question.getTitle())
+                            .questionText(question.getQuestionText())
+                            .defaultScore(question.getDefaultScore())
+                            .options(optionDtoList)
+                            .build()
+            );
+        }
+
+        return questions;
+    }
+
+
+    @Override
+    public List<ExamResponseDto> getCourseExams(Long courseId) {
+        Course course = courseRepository.findById(courseId)
+                .orElseThrow(() -> new EntityNotFoundException("Course not found with this id:" + courseId));
+        List<Exam> exams = course.getExams();
+        List<ExamResponseDto> examDtoList = new ArrayList<>();
+        for (Exam exam : exams){
+            examDtoList.add(ExamResponseDto.builder()
+                    .examTitle(exam.getTitle())
+                    .numberOfQuestions(exam.getQuestionExams().size())
+                    .examDescription(exam.getDescription())
+                    .examDescription(exam.getDescription())
+                    .examDate(exam.getExamDate())
+                    .examTime(exam.getExamTime())
+                    .courseName(course.getTitle())
+                    .build());
+        }
+        return examDtoList;
+    }
 }

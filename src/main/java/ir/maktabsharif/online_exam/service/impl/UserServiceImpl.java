@@ -3,6 +3,7 @@ package ir.maktabsharif.online_exam.service.impl;
 import ir.maktabsharif.online_exam.exception.EntityNotFoundException;
 import ir.maktabsharif.online_exam.model.User;
 import ir.maktabsharif.online_exam.model.dto.UserDto;
+import ir.maktabsharif.online_exam.model.dto.response.UserResponseDto;
 import ir.maktabsharif.online_exam.model.enums.RegisterState;
 import ir.maktabsharif.online_exam.repository.RoleRepository;
 import ir.maktabsharif.online_exam.repository.UserRepository;
@@ -65,7 +66,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> searchUsers(String keyword) {
+    public List<UserResponseDto> searchUsers(String keyword) {
         Specification<User> spec = UserSpecification.searchByKeyword(keyword);
         List<User> users = userRepository.findAll(spec);
         List<User> usersWithoutManager = new ArrayList<>();
@@ -74,12 +75,35 @@ public class UserServiceImpl implements UserService {
                 usersWithoutManager.add(user);
             }
         }
-        return usersWithoutManager;
+        List<UserResponseDto> usersDto = new ArrayList<>();
+        for (User user : usersWithoutManager){
+            usersDto.add(UserResponseDto.builder()
+                    .firstName(user.getFirstName())
+                    .lastName(user.getLastName())
+                    .username(user.getUsername())
+                    .email(user.getEmail())
+                    .registerState(user.getRegisterState())
+                    .dob(user.getDob())
+                    .build());
+        }
+        return usersDto;
     }
 
     @Override
-    public List<User> filterByRoleAndName(String roleName, String name) {
-        return userRepository.findUserByRoleAndName(roleName, name);
+    public List<UserResponseDto> filterByRoleAndName(String roleName, String name) {
+        List<User> userByRoleAndName = userRepository.findUserByRoleAndName(roleName, name);
+        List<UserResponseDto> usersDto = new ArrayList<>();
+        for (User user : userByRoleAndName){
+            usersDto.add(UserResponseDto.builder()
+                    .firstName(user.getFirstName())
+                    .lastName(user.getLastName())
+                    .username(user.getUsername())
+                    .email(user.getEmail())
+                    .registerState(user.getRegisterState())
+                    .dob(user.getDob())
+                    .build());
+        }
+        return usersDto;
     }
 
 

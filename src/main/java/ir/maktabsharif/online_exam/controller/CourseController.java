@@ -44,7 +44,7 @@ public class CourseController {
     }
 
     @PreAuthorize("hasRole('MANAGER')")
-    @PostMapping("/master/course/update")
+    @PutMapping("/master/course/update")
     public ResponseEntity<ApiResponseDto> updateMasterOfCourse(@RequestBody UpdateMasterOfCourseDto updateMasterOfCourseDto) {
         courseService.updateMasterOfCourse(updateMasterOfCourseDto);
         return ResponseEntity.ok(new ApiResponseDto("course.update.success", true));
@@ -82,10 +82,10 @@ public class CourseController {
     }
 
     @PreAuthorize("hasRole('MANAGER')")
-    @PostMapping("/delete/student/course")
-    public String deleteStudentFromCourse(@ModelAttribute DeleteStudentFromCourseDto deleteStudentFromCourseDto) {
+    @DeleteMapping("/delete/student/course")
+    public ResponseEntity<ApiResponseDto> deleteStudentFromCourse(@RequestBody DeleteStudentFromCourseDto deleteStudentFromCourseDto) {
         courseService.deleteStudentFromCourse(deleteStudentFromCourseDto);
-        return "redirect:/course/coursesForDetails?success";
+        return ResponseEntity.ok(new ApiResponseDto("student.delete.from.course.success" , true));
     }
 
     // todo : add the login in service

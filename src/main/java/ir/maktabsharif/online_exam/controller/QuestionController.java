@@ -5,6 +5,7 @@ import ir.maktabsharif.online_exam.model.MultipleChoiceQuestion;
 import ir.maktabsharif.online_exam.model.Question;
 import ir.maktabsharif.online_exam.model.dto.questiondto.*;
 import ir.maktabsharif.online_exam.model.dto.response.ApiResponseDto;
+import ir.maktabsharif.online_exam.model.dto.response.QuestionResponseDto;
 import ir.maktabsharif.online_exam.service.CourseService;
 import ir.maktabsharif.online_exam.service.ExamService;
 import ir.maktabsharif.online_exam.service.MasterService;
@@ -20,43 +21,35 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/question")
 public class QuestionController {
-    private final ExamService examService;
-    private final MasterService masterService;
     private final CourseService courseService;
     private final QuestionService questionService;
 
-    public QuestionController(ExamService examService, MasterService masterService, CourseService courseService, QuestionService questionService) {
-        this.examService = examService;
-        this.masterService = masterService;
+    public QuestionController(CourseService courseService, QuestionService questionService) {
         this.courseService = courseService;
         this.questionService = questionService;
     }
 
     @PreAuthorize("hasRole('MASTER')")
-    @PostMapping("/{courseId}/{examId}/multipleQuestion")
-    public ResponseEntity<ApiResponseDto> createMCQ(@PathVariable Long courseId, @PathVariable Long examId,
+    @PostMapping("/{examId}/multipleQuestion")
+    public ResponseEntity<ApiResponseDto> createMCQ(@PathVariable Long examId,
                                                     @RequestBody MultipleChoiceQuestionDto multipleChoiceQuestionDto) {
-        questionService.createMultipleChoiceQuestion(courseId, examId, multipleChoiceQuestionDto);
+        questionService.createMultipleChoiceQuestion(examId, multipleChoiceQuestionDto);
         return ResponseEntity.ok(new ApiResponseDto("multiple.question.created.success", true));
     }
 
     @PreAuthorize("hasRole('MASTER')")
-    @PostMapping("/{courseId}/{examId}/descriptiveQuestion")
-    public ResponseEntity<ApiResponseDto> createDescriptiveQuestion(@PathVariable Long courseId, @PathVariable Long examId,
+    @PostMapping("/{examId}/descriptiveQuestion")
+    public ResponseEntity<ApiResponseDto> createDescriptiveQuestion(@PathVariable Long examId,
                                                                     @RequestBody DescriptiveQuestionDto descriptiveQuestionDto) {
-        questionService.createDescriptiveQuestion(courseId, examId, descriptiveQuestionDto);
+        questionService.createDescriptiveQuestion(examId, descriptiveQuestionDto);
         return ResponseEntity.ok(new ApiResponseDto("descriptive.question.created.success", true));
     }
 
     @PreAuthorize("hasRole('MASTER')")
     @GetMapping("/{courseId}/bank/questions")
-    private ResponseEntity<List<Question>> questionBankForDeleteOrUpdate(@PathVariable Long courseId, Model model) {
-        List<MultipleChoiceQuestion> multipleChoiceQuestions = courseService.mcqBank(courseId);
-        List<DescriptiveQuestion> descriptiveQuestions = courseService.dqBank(courseId);
-        List<Question> questions = new ArrayList<>();
-        questions.addAll(multipleChoiceQuestions);
-        questions.addAll(descriptiveQuestions);
-        return ResponseEntity.ok(questions);
+    public ResponseEntity<List<QuestionResponseDto>> questionBankForDeleteOrUpdate(@PathVariable Long courseId) {
+        List<QuestionResponseDto> courseQuestionBank = courseService.getCourseQuestionBank(courseId);
+        return ResponseEntity.ok(courseQuestionBank);
     }
 
     @PreAuthorize("hasRole('MASTER')")
@@ -114,7 +107,7 @@ public class QuestionController {
     }
 
     @PreAuthorize("hasRole('MASTER')")
-    @PostMapping("/{questionId}/delete/question/trash")
+    @DeleteMapping("/{questionId}/delete/question/trash")
     public ResponseEntity<ApiResponseDto> deleteQuestionFromTrash(@PathVariable Long questionId) {
         questionService.deletedQuestionFromTrash(questionId);
         return ResponseEntity.ok(new ApiResponseDto("trash.question.deleted.success", true));
@@ -122,7 +115,7 @@ public class QuestionController {
 
     @PreAuthorize("hasRole('MASTER')")
     @PostMapping("/{questionId}/{courseId}/add/question/trash")
-    public ResponseEntity<ApiResponseDto> addQuestionFronTrashToBank(@PathVariable Long questionId , @PathVariable Long courseId) {
+    public ResponseEntity<ApiResponseDto> addQuestionFromTrashToBank(@PathVariable Long questionId , @PathVariable Long courseId) {
         questionService.addQuestionFromTrashToBank(questionId , courseId);
         return ResponseEntity.ok(new ApiResponseDto("trash.question.added.success", true));
     }

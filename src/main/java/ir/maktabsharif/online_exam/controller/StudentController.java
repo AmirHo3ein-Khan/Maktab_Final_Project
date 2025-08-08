@@ -7,6 +7,8 @@ import ir.maktabsharif.online_exam.model.dto.StudentExamDto;
 import ir.maktabsharif.online_exam.model.dto.answerdto.DescriptiveAnswerDto;
 import ir.maktabsharif.online_exam.model.dto.answerdto.MultipleChoiceAnswerDto;
 import ir.maktabsharif.online_exam.model.dto.response.ApiResponseDto;
+import ir.maktabsharif.online_exam.model.dto.response.CourseResponseDto;
+import ir.maktabsharif.online_exam.model.dto.response.ExamResponseDto;
 import ir.maktabsharif.online_exam.model.enums.ExamState;
 import ir.maktabsharif.online_exam.service.*;
 import ir.maktabsharif.online_exam.util.AnswerCacheService;
@@ -16,7 +18,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
-import java.util.List;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 @RestController
@@ -53,7 +58,7 @@ public class StudentController {
 
     @PreAuthorize("hasRole('STUDENT')")
     @PutMapping("/edit/{id}")
-    public ResponseEntity<ApiResponseDto> updateStudent(@PathVariable("id") Long id, @Valid StudentDto studentDto) {
+    public ResponseEntity<ApiResponseDto> updateStudent(@PathVariable("id") Long id, @Valid @RequestBody StudentDto studentDto) {
         boolean isUpdate = studentService.updateStudent(id, studentDto);
         if (isUpdate) {
             String msg = "register.student.success";
@@ -82,53 +87,152 @@ public class StudentController {
 
     @PreAuthorize("hasRole('STUDENT')")
     @GetMapping("/courses/student")
-    public ResponseEntity<List<Course>> coursesOfStudent(Principal principal) {
+    public ResponseEntity<List<CourseResponseDto>> coursesOfStudent(Principal principal) {
         String username = principal.getName();
         Student student = studentService.findByUsername(username);
-        List<Course> courses = studentService.coursesOfStudent(student.getId());
+        List<CourseResponseDto> courses = studentService.coursesOfStudent(student.getId());
         return ResponseEntity.ok(courses);
     }
 
     @PreAuthorize("hasRole('STUDENT')")
     @GetMapping("/{courseId}/student/exams")
-    public ResponseEntity<List<Exam>> studentExams(@PathVariable Long courseId) {
+    public ResponseEntity<List<ExamResponseDto>> studentExams(@PathVariable Long courseId) {
         Course course = courseService.findById(courseId);
-        List<Exam> exams = course.getExams();
+        List<ExamResponseDto> exams = examService.getCourseExams(courseId);
         return ResponseEntity.ok(exams);
     }
 
-    @PreAuthorize("hasRole('STUDENT')")
-    @PostMapping("/exam/start")
-    public ResponseEntity<StudentExam> startExam(@RequestBody StudentExamDto studentExamDto) {
-        studentExamDto.getExamId();
-        Exam exam = examService.findById(studentExamDto.getExamId());
-        if (exam.getExamState() == ExamState.NOT_STARTED) {
-            throw new RuntimeException("exam.state.not_started");
-        }
-        if (exam.getExamState() == ExamState.FINISHED) {
-            throw new RuntimeException("exam.state.finished");
-        }
-        StudentExam studentExam = studentExamService.startExam(studentExamDto);
-        return ResponseEntity.ok(studentExam);
-    }
+    @GetMapping("/{examId}/questions/{questionId}")
+    public ResponseEntity<?> getQuestionById(
+            @PathVariable Long examId,
+            @PathVariable Long questionId,
+            Principal principal) {
 
-    @PostMapping("/exam/student/answers/{questionIndex}")
-    public ResponseEntity<Answer> studentAnswers(@RequestBody StudentExamDto studentExamDto,
-                                                      @PathVariable int questionIndex) {
-        StudentExam studentExam = studentExamService.findStudentExam(studentExamDto.getStudentId(), studentExamDto.getExamId());
-        String cacheKey = studentExam.getExam().getId() + "_" + studentExam.getStudent().getId() + "_" + questionIndex;
+        Question question = questionService.findById(questionId); // Make sure this exists
+
+        Student student = studentService.findByUsername(principal.getName());
+        StudentExam studentExam = studentExamService.findStudentExam(student.getId(), examId);
+        if (studentExam == null) return ResponseEntity.status(404).body("Exam not started.");
+
+        LocalDateTime now = LocalDateTime.now();
+        if (now.isAfter(studentExam.getEndAt())) {
+            return ResponseEntity.status(400).body("Exam expired.");
+        }
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("questionId", questionId);
+        map.put("questionText", question.getQuestionText());
+        map.put("questionType", question instanceof MultipleChoiceQuestion ? "MCQ" : "DESC");
+        map.put("remainingTimeSeconds", Duration.between(now, studentExam.getEndAt()).getSeconds());
+
+        String cacheKey = examId + "_" + student.getId() + "_" + questionId;
         Object cachedAnswer = answerCacheService.getAnswerFromCache(cacheKey);
 
-        if (cachedAnswer != null) {
-            if (cachedAnswer instanceof MultipleChoiceAnswerDto mcAnswerDto) {
-                Long selectedOptionId = mcAnswerDto.getSelectedOptionId();
-                Answer answer = answerService.findAnswer(selectedOptionId);
-            }
-            if (cachedAnswer instanceof DescriptiveAnswerDto descAnswerDto) {
-            }
+        if (cachedAnswer instanceof MultipleChoiceAnswerDto mcq) {
+            map.put("selectedOptionId", mcq.getSelectedOptionId());
+        } else if (cachedAnswer instanceof DescriptiveAnswerDto desc) {
+            map.put("answer", desc.getAnswer());
         }
-        return null;
+
+        map.put("question", question);
+
+        return ResponseEntity.ok(map);
     }
+
+
+    @PostMapping("/{examId}/saveAnswer")
+    public ResponseEntity<?> saveAnswer(
+            @PathVariable Long examId,
+            @RequestParam Long studentId,
+            @RequestParam int questionIndex,
+            @RequestParam(required = false) Long selectedOptionId,
+            @RequestParam(required = false) String answer) {
+
+        List<Question> allQuestions = new ArrayList<>();
+        allQuestions.addAll(examService.multipleChoiceQuestionsOfExam(examId));
+        allQuestions.addAll(examService.descriptiveQuestionsOfExam(examId));
+
+        if (questionIndex < 0 || questionIndex >= allQuestions.size()) {
+            return ResponseEntity.badRequest().body("Invalid question index.");
+        }
+
+        Question question = allQuestions.get(questionIndex);
+        String cacheKey = examId + "_" + studentId + "_" + questionIndex;
+
+        if (question instanceof MultipleChoiceQuestion && selectedOptionId != null) {
+            MultipleChoiceAnswerDto mcAnswerDto = new MultipleChoiceAnswerDto(question.getId(), examId, studentId, selectedOptionId);
+            answerCacheService.saveAnswerToCache(cacheKey, mcAnswerDto);
+        } else if (question instanceof DescriptiveQuestion && answer != null) {
+            DescriptiveAnswerDto descAnswerDto = new DescriptiveAnswerDto(question.getId(), examId, studentId, answer);
+            answerCacheService.saveAnswerToCache(cacheKey, descAnswerDto);
+        } else {
+            return ResponseEntity.badRequest().body("Invalid answer data.");
+        }
+
+        return ResponseEntity.ok("Answer saved successfully.");
+    }
+
+    @GetMapping("/{examId}/submitExam")
+    public ResponseEntity<?> endExam(@PathVariable Long examId, Principal principal) {
+        String username = principal.getName();
+        Student student = studentService.findByUsername(username);
+
+        List<Question> allQuestions = new ArrayList<>();
+        allQuestions.addAll(examService.multipleChoiceQuestionsOfExam(examId));
+        allQuestions.addAll(examService.descriptiveQuestionsOfExam(examId));
+
+        for (int questionIndex = 0; questionIndex < allQuestions.size(); questionIndex++) {
+            String cacheKey = examId + "_" + student.getId() + "_" + questionIndex;
+            Object cachedAnswer = answerCacheService.getAnswerFromCache(cacheKey);
+
+            if (cachedAnswer instanceof MultipleChoiceAnswerDto mcAnswerDto) {
+                answerService.saveMultipleChoiceAnswer(mcAnswerDto);
+            } else if (cachedAnswer instanceof DescriptiveAnswerDto descAnswerDto) {
+                answerService.saveDescriptiveAnswer(descAnswerDto);
+            }
+
+            answerCacheService.clearAnswerFromCache(cacheKey);
+        }
+
+        studentExamService.submitExam(student.getId(), examId);
+        answerCacheService.clearAllAnswers();
+
+        return ResponseEntity.ok("Exam submitted successfully.");
+    }
+
+    @GetMapping("/{examId}/reviewExam")
+    public ResponseEntity<?> reviewExam(@PathVariable Long examId, Principal principal) {
+        String username = principal.getName();
+        Student student = studentService.findByUsername(username);
+
+        List<QuestionExam> questionExams = questionService.findQuestionExamByExam(examId);
+        List<Question> allQuestions = questionExams.stream()
+                .map(QuestionExam::getQuestion)
+                .collect(Collectors.toList());
+
+        Map<Long, Object> rawStudentAnswers = answerService.getStudentAnswers(student.getId(), examId);
+
+        List<Map<String, Object>> reviewedQuestions = new ArrayList<>();
+
+        for (Question question : allQuestions) {
+            Map<String, Object> qData = new HashMap<>();
+            qData.put("questionId", question.getId());
+            qData.put("questionText", question.getQuestionText());
+            qData.put("type", question instanceof MultipleChoiceQuestion ? "MCQ" : "DESC");
+
+            Object answer = rawStudentAnswers.get(question.getId());
+            if (answer instanceof Option option) {
+                qData.put("answer", option.getOptionText());
+            } else {
+                qData.put("answer", answer != null ? answer.toString() : null);
+            }
+
+            reviewedQuestions.add(qData);
+        }
+
+        return ResponseEntity.ok(reviewedQuestions);
+    }
+
 
 
 }

@@ -5,12 +5,15 @@ import ir.maktabsharif.online_exam.model.*;
 import ir.maktabsharif.online_exam.model.dto.*;
 import ir.maktabsharif.online_exam.model.dto.questiondto.DeleteQuestionFromQuestionBankDto;
 import ir.maktabsharif.online_exam.model.dto.response.CourseResponseDto;
+import ir.maktabsharif.online_exam.model.dto.response.OptionResponseDto;
+import ir.maktabsharif.online_exam.model.dto.response.QuestionResponseDto;
 import ir.maktabsharif.online_exam.repository.*;
 import ir.maktabsharif.online_exam.service.CourseService;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CourseServiceImpl implements CourseService {
@@ -180,5 +183,42 @@ public class CourseServiceImpl implements CourseService {
         questionRepository.save(question);
     }
 
+    @Override
+    public List<QuestionResponseDto> getCourseQuestionBank(Long courseId) {
+        List<MultipleChoiceQuestion> multipleChoiceQuestions = mcqBank(courseId);
+        List<DescriptiveQuestion> descriptiveQuestions = dqBank(courseId);
+        List<QuestionResponseDto> questions = new ArrayList<>();
 
+        for (DescriptiveQuestion question : descriptiveQuestions) {
+            questions.add(
+                    QuestionResponseDto.builder()
+                            .title(question.getTitle())
+                            .questionText(question.getQuestionText())
+                            .defaultScore(question.getDefaultScore())
+                            .build()
+            );
+        }
+
+        for (MultipleChoiceQuestion question : multipleChoiceQuestions) {
+            List<OptionResponseDto> optionDtos = question.getOptions()
+                    .stream()
+                    .map(option -> OptionResponseDto.builder()
+                            .optionText(option.getOptionText())
+                            .isCorrect(option.isCorrect())
+                            .build()
+                    )
+                    .collect(Collectors.toList());
+
+            questions.add(
+                    QuestionResponseDto.builder()
+                            .title(question.getTitle())
+                            .questionText(question.getQuestionText())
+                            .defaultScore(question.getDefaultScore())
+                            .options(optionDtos)
+                            .build()
+            );
+        }
+
+        return questions;
+    }
 }
