@@ -19,7 +19,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
     private final CustomUserDetailsService customUserDetailsService;
 
-    public JwtAuthorizationFilter( JwtService jwtService, CustomUserDetailsService customUserDetailsService) {
+    public JwtAuthorizationFilter(JwtService jwtService, CustomUserDetailsService customUserDetailsService) {
         this.jwtService = jwtService;
         this.customUserDetailsService = customUserDetailsService;
     }
@@ -31,30 +31,29 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         String header = req.getHeader("Authorization");
-        String token;
-        String username;
 
         if (header == null || !header.startsWith("Bearer ")) {
             chain.doFilter(req, res);
             return;
         }
 
-        token = header.substring(7);
-        username = jwtService.extractUsername(token);
+        String token = header.substring(7);
 
-        var userDetails = customUserDetailsService.loadUserByUsername(username);
+        try {
+            String username = jwtService.extractUsername(token);
+            var userDetails = customUserDetailsService.loadUserByUsername(username);
+            if (jwtService.isTokenValid(token, username)) {
+                UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
+                        userDetails, null, userDetails.getAuthorities());
 
-        if (this.jwtService.isTokenValid(token, userDetails.getUsername())) {
-            final UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                    userDetails,
-                    null,
-                    userDetails.getAuthorities());
+                SecurityContextHolder.getContext().setAuthentication(auth);
 
-            authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(req));
-
-            SecurityContextHolder.getContext().setAuthentication(authToken);
+            }
+        } catch (Exception ex) {
+            SecurityContextHolder.clearContext();
+            res.sendError(HttpServletResponse.SC_UNAUTHORIZED, ex.getMessage());
+            return;
         }
-
         chain.doFilter(req, res);
     }
 }
