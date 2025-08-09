@@ -15,7 +15,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @SuperBuilder
-public class QuestionExam extends BaseEntity<Long> {
+public class ExamQuestion extends BaseEntity<Long> {
 
     @ManyToOne
     @JoinColumn(name = "question_id", nullable = false)
@@ -27,6 +27,6 @@ public class QuestionExam extends BaseEntity<Long> {
 
     private Double questionScore;
 
-    @OneToMany(mappedBy = "questionExam")
+    @OneToMany(mappedBy = "examQuestion")
     private List<Answer> answers = new ArrayList<>();
 }

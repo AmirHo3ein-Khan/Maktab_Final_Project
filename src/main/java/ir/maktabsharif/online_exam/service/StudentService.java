@@ -13,7 +13,6 @@ public interface StudentService {
     boolean checkPassword(Student student, String oldPassword);
     void changePassword(Student student , String newPassword);
     Student findById(Long id);
-    List<Student> findAll();
     List<CourseResponseDto> coursesOfStudent(Long studentId);
     Student findByUsername(String username);
 

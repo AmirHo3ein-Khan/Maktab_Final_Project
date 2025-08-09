@@ -31,7 +31,7 @@ public class Question extends BaseEntity<Long> {
     private Double defaultScore;
 
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL)
-    private List<QuestionExam> questionExams = new ArrayList<>();
+    private List<ExamQuestion> examQuestions = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "COURSE_ID")

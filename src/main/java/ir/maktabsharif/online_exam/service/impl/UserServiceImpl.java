@@ -1,8 +1,12 @@
 package ir.maktabsharif.online_exam.service.impl;
 
+import ir.maktabsharif.online_exam.config.JwtService;
 import ir.maktabsharif.online_exam.exception.EntityNotFoundException;
 import ir.maktabsharif.online_exam.model.User;
 import ir.maktabsharif.online_exam.model.dto.UserDto;
+import ir.maktabsharif.online_exam.model.dto.request.AuthenticationRequest;
+import ir.maktabsharif.online_exam.model.dto.request.RefreshRequest;
+import ir.maktabsharif.online_exam.model.dto.response.AuthenticationResponse;
 import ir.maktabsharif.online_exam.model.dto.response.UserResponseDto;
 import ir.maktabsharif.online_exam.model.enums.RegisterState;
 import ir.maktabsharif.online_exam.repository.RoleRepository;
@@ -10,6 +14,11 @@ import ir.maktabsharif.online_exam.repository.UserRepository;
 import ir.maktabsharif.online_exam.service.UserService;
 import ir.maktabsharif.online_exam.util.UserSpecification;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -18,11 +27,70 @@ import java.util.*;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final AuthenticationManager authenticationManager;
+    private final JwtService jwtService;
 
 
-    public UserServiceImpl(UserRepository userRepository) {
+    public UserServiceImpl(UserRepository userRepository, AuthenticationManager authenticationManager, JwtService jwtService) {
         this.userRepository = userRepository;
+        this.authenticationManager = authenticationManager;
+        this.jwtService = jwtService;
     }
+
+//    @Override
+//    public AuthenticationResponse login(final AuthenticationRequest request) {
+//        final Authentication auth = this.authenticationManager.authenticate(
+//                new UsernamePasswordAuthenticationToken(
+//                        request.getUsername(),
+//                        request.getPassword()
+//                )
+//        );
+//        final User user = (User) auth.getPrincipal();
+//        final String token = this.jwtService.generateAccessToken(user.getUsername());
+//        final String refreshToken = this.jwtService.generateRefreshToken(user.getUsername());
+//        final String tokenType = "Bearer";
+//        return AuthenticationResponse.builder()
+//                .accessToken(token)
+//                .refreshToken(refreshToken)
+//                .tokenType(tokenType)
+//                .build();
+//    }
+
+    @Override
+    public AuthenticationResponse login(final AuthenticationRequest request) {
+        final Authentication auth = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        request.getUsername(),
+                        request.getPassword()
+                )
+        );
+
+        final UserDetails userDetails = (UserDetails) auth.getPrincipal();
+
+        final User user = userRepository.findByUsername(userDetails.getUsername())
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        final String token = jwtService.generateAccessToken(user.getUsername());
+        final String refreshToken = jwtService.generateRefreshToken(user.getUsername());
+
+        return AuthenticationResponse.builder()
+                .accessToken(token)
+                .refreshToken(refreshToken)
+                .tokenType("Bearer")
+                .build();
+    }
+
+    @Override
+    public AuthenticationResponse refreshToken(final RefreshRequest req) {
+        final String newAccessToken = this.jwtService.refreshAccessToken(req.getRefreshToken());
+        final String tokenType = "Bearer";
+        return AuthenticationResponse.builder()
+                .accessToken(newAccessToken)
+                .refreshToken(req.getRefreshToken())
+                .tokenType(tokenType)
+                .build();
+    }
+
 
     @Override
     public User findByUsername(String username) {

@@ -10,6 +10,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class QuestionResponseDto {
+    private Long id;
     private String title;
 
     private String questionText;

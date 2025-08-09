@@ -21,14 +21,14 @@ public class QuestionServiceImpl implements QuestionService {
     private final CourseRepository courseRepository;
     private final MultipleChoiceQuestionRepository multipleChoiceQuestionRepository;
     private final DescriptiveQuestionRepository descriptiveQuestionRepository;
-    private final QuestionExamRepository questionExamRepository;
+    private final ExamQuestionRepository examQuestionRepository;
 
     public QuestionServiceImpl(QuestionRepository questionRepository, ExamRepository examRepository,
                                CourseRepository courseRepository, MultipleChoiceQuestionRepository multipleChoiceQuestionRepository,
-                               DescriptiveQuestionRepository descriptiveQuestionRepository, QuestionExamRepository questionExamRepository) {
+                               DescriptiveQuestionRepository descriptiveQuestionRepository, ExamQuestionRepository examQuestionRepository) {
         this.multipleChoiceQuestionRepository = multipleChoiceQuestionRepository;
         this.descriptiveQuestionRepository = descriptiveQuestionRepository;
-        this.questionExamRepository = questionExamRepository;
+        this.examQuestionRepository = examQuestionRepository;
         this.questionRepository = questionRepository;
         this.courseRepository = courseRepository;
         this.examRepository = examRepository;
@@ -48,7 +48,7 @@ public class QuestionServiceImpl implements QuestionService {
                 .course(course)
                 .defaultScore(dto.getDefaultScore())
                 .options(new ArrayList<>())
-                .questionExams(new ArrayList<>())
+                .examQuestions(new ArrayList<>())
                 .build();
 
 
@@ -65,12 +65,12 @@ public class QuestionServiceImpl implements QuestionService {
         multipleChoiceQuestion.getOptions().addAll(options);
         multipleChoiceQuestionRepository.save(multipleChoiceQuestion);
 
-        QuestionExam questionExam = QuestionExam.builder()
+        ExamQuestion examQuestion = ExamQuestion.builder()
                 .exam(exam)
                 .question(multipleChoiceQuestion)
                 .build();
 
-        questionExamRepository.save(questionExam);
+        examQuestionRepository.save(examQuestion);
 
         calculateTotalScore(exam);
         examRepository.save(exam);
@@ -90,16 +90,16 @@ public class QuestionServiceImpl implements QuestionService {
                 .title(dto.getTitle())
                 .defaultScore(dto.getScore())
                 .course(course)
-                .questionExams(new ArrayList<>())
+                .examQuestions(new ArrayList<>())
                 .build();
 
         descriptiveQuestionRepository.save(descriptiveQuestion);
 
-        QuestionExam questionExam = QuestionExam.builder()
+        ExamQuestion examQuestion = ExamQuestion.builder()
                 .exam(exam)
                 .question(descriptiveQuestion)
                 .build();
-        questionExamRepository.save(questionExam);
+        examQuestionRepository.save(examQuestion);
 
         calculateTotalScore(exam);
         examRepository.save(exam);
@@ -113,19 +113,19 @@ public class QuestionServiceImpl implements QuestionService {
         Exam exam = examRepository.findById(dto.getExamId())
                 .orElseThrow(() -> new EntityNotFoundException("Exam with this id not found: " + dto.getExamId()));
 
-        boolean questionExistsInExam = questionExamRepository.existsByExamAndQuestion(exam, question);
+        boolean questionExistsInExam = examQuestionRepository.existsByExamAndQuestion(exam, question);
 
         if (questionExistsInExam) {
             throw new QuestionAlreadyExistsInExamException("This question already added to this exam!");
         }
 
-        QuestionExam questionExam = QuestionExam.builder()
+        ExamQuestion examQuestion = ExamQuestion.builder()
                 .exam(exam)
                 .question(question)
                 .questionScore(dto.getScore())
                 .build();
 
-        questionExamRepository.save(questionExam);
+        examQuestionRepository.save(examQuestion);
 
         calculateTotalScore(exam);
         examRepository.save(exam);
@@ -133,10 +133,10 @@ public class QuestionServiceImpl implements QuestionService {
 
     public void calculateTotalScore(Exam exam) {
         double totalScore = 0.0;
-        for (QuestionExam questionExam : exam.getQuestionExams()) {
-            Double score = questionExam.getQuestionScore();
+        for (ExamQuestion examQuestion : exam.getExamQuestions()) {
+            Double score = examQuestion.getQuestionScore();
             if (score == null) {
-                score = questionExam.getQuestion().getDefaultScore();
+                score = examQuestion.getQuestion().getDefaultScore();
             }
             totalScore += score != null ? score : 0.0;
         }
@@ -151,10 +151,10 @@ public class QuestionServiceImpl implements QuestionService {
         Exam exam = examRepository.findById(dto.getExamId())
                 .orElseThrow(() -> new EntityNotFoundException("Exam with this id not found: " + dto.getExamId()));
 
-        QuestionExam questionExam = questionExamRepository.findByExamAndQuestion(exam, question)
+        ExamQuestion examQuestion = examQuestionRepository.findByExamAndQuestion(exam, question)
                 .orElseThrow(() -> new QuestionNotFoundInExamException("Not question added for this exam!"));
 
-        questionExamRepository.delete(questionExam);
+        examQuestionRepository.delete(examQuestion);
 
         calculateTotalScore(exam);
         examRepository.save(exam);
@@ -285,9 +285,9 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
-    public List<QuestionExam> findQuestionExamByExam(Long examId) {
+    public List<ExamQuestion> findQuestionExamByExam(Long examId) {
         Exam exam = examRepository.findById(examId)
                 .orElseThrow(() -> new EntityNotFoundException("Exam with this id not found :" + examId));
-        return questionExamRepository.findByExam(exam);
+        return examQuestionRepository.findByExam(exam);
     }
 }

@@ -6,6 +6,7 @@ import ir.maktabsharif.online_exam.model.dto.request.ExamRequestDto;
 import ir.maktabsharif.online_exam.model.dto.response.ExamDetailsDto;
 import ir.maktabsharif.online_exam.model.dto.response.ExamResponseDto;
 import ir.maktabsharif.online_exam.model.dto.response.QuestionResponseDto;
+import ir.maktabsharif.online_exam.model.dto.response.StudentExamResponseDTO;
 
 import java.util.List;
 

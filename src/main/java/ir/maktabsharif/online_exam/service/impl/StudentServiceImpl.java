@@ -83,12 +83,6 @@ public class StudentServiceImpl implements StudentService {
                 .orElseThrow(() -> new EntityNotFoundException("Student not found with this id" + id));
     }
 
-
-    @Override
-    public List<Student> findAll() {
-        return studentRepository.findAll();
-    }
-
     @Override
     public List<CourseResponseDto> coursesOfStudent(Long studentId) {
         Student student = studentRepository.findById(studentId)

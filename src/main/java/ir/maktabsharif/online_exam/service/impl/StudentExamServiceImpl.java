@@ -1,14 +1,16 @@
 package ir.maktabsharif.online_exam.service.impl;
 
-import ir.maktabsharif.online_exam.exception.EntityNotFoundException;
-import ir.maktabsharif.online_exam.exception.StudentCompletedTheExamException;
-import ir.maktabsharif.online_exam.exception.StudentSubmittedTheExamException;
+import ir.maktabsharif.online_exam.exception.*;
 import ir.maktabsharif.online_exam.model.*;
-import ir.maktabsharif.online_exam.model.dto.StudentExamDto;
+import ir.maktabsharif.online_exam.model.dto.answerdto.DescriptiveAnswerDto;
+import ir.maktabsharif.online_exam.model.dto.answerdto.MultipleChoiceAnswerDto;
 import ir.maktabsharif.online_exam.model.dto.response.ExamResponseDto;
+import ir.maktabsharif.online_exam.model.dto.response.StudentExamResponseDTO;
 import ir.maktabsharif.online_exam.model.enums.StudentExamStatus;
 import ir.maktabsharif.online_exam.repository.*;
 import ir.maktabsharif.online_exam.service.StudentExamService;
+import ir.maktabsharif.online_exam.util.AnswerCacheService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
@@ -24,30 +26,25 @@ public class StudentExamServiceImpl implements StudentExamService {
     private final StudentExamRepository studentExamRepository;
     private final StudentRepository studentRepository;
     private final ExamRepository examRepository;
-    private final MultipleChoiceAnswerRepository multipleChoiceAnswerRepository;
-    private final DescriptiveAnswerRepository descriptiveAnswerRepository;
-    private final QuestionExamRepository questionExamRepository;
     private final QuestionRepository questionRepository;
-    private final OptionRepository optionRepository;
+    private final AnswerCacheService answerCacheService;
 
-    public StudentExamServiceImpl(StudentExamRepository studentExamRepository, StudentRepository studentRepository, ExamRepository examRepository, MultipleChoiceAnswerRepository multipleChoiceAnswerRepository, DescriptiveAnswerRepository descriptiveAnswerRepository, QuestionExamRepository questionExamRepository, QuestionRepository questionRepository, OptionRepository optionRepository) {
+    public StudentExamServiceImpl(StudentExamRepository studentExamRepository, StudentRepository studentRepository,
+                                  ExamRepository examRepository, QuestionRepository questionRepository, AnswerCacheService answerCacheService) {
         this.studentExamRepository = studentExamRepository;
         this.studentRepository = studentRepository;
         this.examRepository = examRepository;
-        this.multipleChoiceAnswerRepository = multipleChoiceAnswerRepository;
-        this.descriptiveAnswerRepository = descriptiveAnswerRepository;
-        this.questionExamRepository = questionExamRepository;
         this.questionRepository = questionRepository;
-        this.optionRepository = optionRepository;
+        this.answerCacheService = answerCacheService;
     }
 
     @Override
-    public StudentExam startExam(StudentExamDto dto) {
-        Student student = studentRepository.findById(dto.getStudentId())
-                .orElseThrow(() -> new EntityNotFoundException("Student with this id not found : " + dto.getStudentId()));
+    public StudentExamResponseDTO startExam(Long examId , Long studentId){
+        Student student = studentRepository.findById(studentId)
+                .orElseThrow(() -> new EntityNotFoundException("Student with this id not found : " + studentId));
 
-        Exam exam = examRepository.findById(dto.getExamId())
-                .orElseThrow(() -> new EntityNotFoundException("Student with this id not found : " + dto.getExamId()));
+        Exam exam = examRepository.findById(examId)
+                .orElseThrow(() -> new EntityNotFoundException("Student with this id not found : " + examId));
 
         Optional<StudentExam> foundedStudentExam = studentExamRepository.findByStudentAndExam(student, exam);
 
@@ -64,9 +61,17 @@ public class StudentExamServiceImpl implements StudentExamService {
                     .endAt(LocalDateTime.now().plusMinutes(exam.getExamTime()))
                     .build();
             studentExamRepository.save(studentExam);
+
         }
-        return foundedStudentExam.get();
+        return StudentExamResponseDTO.builder()
+                .studentId(studentId)
+                .examId(examId)
+                .startAt(foundedStudentExam.get().getStartedAt())
+                .endAt(foundedStudentExam.get().getEndAt())
+                .currentQuestion(0)
+                .build();
     }
+
 
     @Override
     public void submitExam(Long studentId, Long examId) {
@@ -117,11 +122,12 @@ public class StudentExamServiceImpl implements StudentExamService {
                         .examDescription(exam.getDescription())
                         .examDate(exam.getExamDate())
                         .examTime(exam.getExamTime())
-                        .numberOfQuestions(exam.getQuestionExams().size())
+                        .numberOfQuestions(exam.getExamQuestions().size())
                         .courseName(exam.getCourse().getTitle())
                         .build()
                 )
                 .collect(Collectors.toList());
     }
+
 
 }

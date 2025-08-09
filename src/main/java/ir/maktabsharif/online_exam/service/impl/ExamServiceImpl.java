@@ -4,10 +4,7 @@ import ir.maktabsharif.online_exam.exception.EntityNotFoundException;
 import ir.maktabsharif.online_exam.model.*;
 import ir.maktabsharif.online_exam.model.dto.ExamDto;
 import ir.maktabsharif.online_exam.model.dto.request.ExamRequestDto;
-import ir.maktabsharif.online_exam.model.dto.response.ExamDetailsDto;
-import ir.maktabsharif.online_exam.model.dto.response.ExamResponseDto;
-import ir.maktabsharif.online_exam.model.dto.response.OptionResponseDto;
-import ir.maktabsharif.online_exam.model.dto.response.QuestionResponseDto;
+import ir.maktabsharif.online_exam.model.dto.response.*;
 import ir.maktabsharif.online_exam.model.enums.ExamState;
 import ir.maktabsharif.online_exam.repository.*;
 import ir.maktabsharif.online_exam.service.ExamService;
@@ -24,18 +21,20 @@ public class ExamServiceImpl implements ExamService {
     private final ExamRepository examRepository;
     private final CourseRepository courseRepository;
     private final MasterRepository masterRepository;
-    private final QuestionExamRepository questionExamRepository;
+    private final ExamQuestionRepository examQuestionRepository;
     private final StudentExamRepository studentExamRepository;
     private final AnswerRepository answerRepository;
+    private final StudentRepository studentRepository;
 
     public ExamServiceImpl(ExamRepository examRepository, CourseRepository courseRepository,
-                           MasterRepository masterRepository, QuestionExamRepository questionExamRepository, StudentExamRepository studentExamRepository, AnswerRepository answerRepository) {
-        this.questionExamRepository = questionExamRepository;
+                           MasterRepository masterRepository, ExamQuestionRepository examQuestionRepository, StudentExamRepository studentExamRepository, AnswerRepository answerRepository, StudentRepository studentRepository) {
+        this.examQuestionRepository = examQuestionRepository;
         this.studentExamRepository = studentExamRepository;
         this.courseRepository = courseRepository;
         this.masterRepository = masterRepository;
         this.examRepository = examRepository;
         this.answerRepository = answerRepository;
+        this.studentRepository = studentRepository;
     }
 
     @Override
@@ -107,11 +106,11 @@ public class ExamServiceImpl implements ExamService {
     public boolean deleteExam(Long id) {
         Optional<Exam> exam = examRepository.findById(id);
         if (exam.isPresent()) {
-            List<QuestionExam> foundedQuestionExamByExam = questionExamRepository.findAllByExam(exam.get());
-            for (QuestionExam questionExam : foundedQuestionExamByExam){
-                answerRepository.deleteAll(answerRepository.findAllByQuestionExam(questionExam));
+            List<ExamQuestion> foundedExamByExamQuestion = examQuestionRepository.findAllByExam(exam.get());
+            for (ExamQuestion examQuestion : foundedExamByExamQuestion){
+                answerRepository.deleteAll(answerRepository.findAllByExamQuestion(examQuestion));
             }
-            questionExamRepository.deleteAll(foundedQuestionExamByExam);
+            examQuestionRepository.deleteAll(foundedExamByExamQuestion);
             studentExamRepository.deleteAll(studentExamRepository.findAllByExam(exam.get()));
             examRepository.delete(exam.get());
 
@@ -122,7 +121,7 @@ public class ExamServiceImpl implements ExamService {
 
     @Override
     public List<MultipleChoiceQuestion> multipleChoiceQuestionsOfExam(Long examId) {
-        List<Question> questions = questionExamRepository.findQuestionsByExamId(examId);
+        List<Question> questions = examQuestionRepository.findQuestionsByExamId(examId);
         List<MultipleChoiceQuestion> multipleChoiceQuestions = new ArrayList<>();
         for (Question question : questions) {
             if (question instanceof MultipleChoiceQuestion) {
@@ -134,7 +133,7 @@ public class ExamServiceImpl implements ExamService {
 
     @Override
     public List<DescriptiveQuestion> descriptiveQuestionsOfExam(Long examId) {
-        List<Question> questions = questionExamRepository.findQuestionsByExamId(examId);
+        List<Question> questions = examQuestionRepository.findQuestionsByExamId(examId);
         List<DescriptiveQuestion> descriptiveQuestions = new ArrayList<>();
         for (Question question : questions) {
             if (question instanceof DescriptiveQuestion) {
@@ -213,7 +212,7 @@ public class ExamServiceImpl implements ExamService {
         for (Exam exam : exams){
             examDtoList.add(ExamResponseDto.builder()
                     .examTitle(exam.getTitle())
-                    .numberOfQuestions(exam.getQuestionExams().size())
+                    .numberOfQuestions(exam.getExamQuestions().size())
                     .examDescription(exam.getDescription())
                     .examDescription(exam.getDescription())
                     .examDate(exam.getExamDate())
@@ -223,4 +222,5 @@ public class ExamServiceImpl implements ExamService {
         }
         return examDtoList;
     }
+
 }

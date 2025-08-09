@@ -10,6 +10,6 @@ import java.util.List;
 
 @Repository
 public interface QuestionRepository extends JpaRepository<Question, Long> {
-    @Query("SELECT q FROM Question q WHERE q.course IS NULL AND q.questionExams IS EMPTY")
+    @Query("SELECT q FROM Question q WHERE q.course IS NULL AND q.examQuestions IS EMPTY")
     List<Question> findQuestionsWithNoCourseAndNoExams();
 }

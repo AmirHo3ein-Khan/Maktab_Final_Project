@@ -20,8 +20,8 @@ public class Answer extends BaseEntity<Long> {
     private double score;
 
     @ManyToOne
-    @JoinColumn(name = "QUESTION_EXAM_ID")
-    private QuestionExam questionExam;
+    @JoinColumn(name = "EXAM_QUESTION_ID")
+    private ExamQuestion examQuestion;
 
     @ManyToOne
     @JoinColumn(name = "STUDENT_ID")

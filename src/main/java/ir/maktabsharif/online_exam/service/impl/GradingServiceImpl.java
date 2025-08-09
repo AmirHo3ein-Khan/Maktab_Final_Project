@@ -14,7 +14,7 @@ import java.util.Optional;
 @Service
 public class GradingServiceImpl implements GradingService {
     private final StudentRepository studentRepository;
-    private final QuestionExamRepository questionExamRepository;
+    private final ExamQuestionRepository examQuestionRepository;
     private final QuestionRepository questionRepository;
     private final ExamRepository examRepository;
     private final AnswerRepository answerRepository;
@@ -22,14 +22,14 @@ public class GradingServiceImpl implements GradingService {
     private final MultipleChoiceAnswerRepository multipleChoiceAnswerRepository;
     private final DescriptiveAnswerRepository descriptiveAnswerRepository;
 
-    public GradingServiceImpl(StudentRepository studentRepository, QuestionExamRepository questionExamRepository,
+    public GradingServiceImpl(StudentRepository studentRepository, ExamQuestionRepository examQuestionRepository,
                               AnswerRepository answerRepository, StudentExamRepository studentExamRepository,
                               QuestionRepository questionRepository, ExamRepository examRepository,
                               MultipleChoiceAnswerRepository multipleChoiceAnswerRepository,
                               DescriptiveAnswerRepository descriptiveAnswerRepository) {
         this.multipleChoiceAnswerRepository = multipleChoiceAnswerRepository;
         this.descriptiveAnswerRepository = descriptiveAnswerRepository;
-        this.questionExamRepository = questionExamRepository;
+        this.examQuestionRepository = examQuestionRepository;
         this.studentExamRepository = studentExamRepository;
         this.questionRepository = questionRepository;
         this.studentRepository = studentRepository;
@@ -47,15 +47,15 @@ public class GradingServiceImpl implements GradingService {
         Question question = questionRepository.findById(questionId)
                 .orElseThrow(() -> new EntityNotFoundException("Question with this id not found: " + questionId));
 
-        QuestionExam questionExam = questionExamRepository.findByExamAndQuestion(exam, question)
+        ExamQuestion examQuestion = examQuestionRepository.findByExamAndQuestion(exam, question)
                 .orElseThrow(() -> new QuestionNotFoundInExamException("Not question added for this exam!"));
 
-        Answer answer = answerRepository.findByQuestionExam(questionExam)
+        Answer answer = answerRepository.findByExamQuestion(examQuestion)
                 .orElseThrow(() -> new EntityNotFoundException("Student answer non of questions!"));
 
-        Double scoreOfQuestion = questionExam.getQuestionScore();
+        Double scoreOfQuestion = examQuestion.getQuestionScore();
         if (scoreOfQuestion == null) {
-            scoreOfQuestion = questionExam.getQuestion().getDefaultScore();
+            scoreOfQuestion = examQuestion.getQuestion().getDefaultScore();
         }
 
         if (answer instanceof MultipleChoiceAnswer) {
@@ -75,15 +75,15 @@ public class GradingServiceImpl implements GradingService {
         Question question = questionRepository.findById(questionId)
                 .orElseThrow(() -> new EntityNotFoundException("Question with this id not found: " + questionId));
 
-        QuestionExam questionExam = questionExamRepository.findByExamAndQuestion(exam, question)
+        ExamQuestion examQuestion = examQuestionRepository.findByExamAndQuestion(exam, question)
                 .orElseThrow(() -> new QuestionNotFoundInExamException("Not question added for this exam!"));
 
-        Answer answer = answerRepository.findByQuestionExam(questionExam)
+        Answer answer = answerRepository.findByExamQuestion(examQuestion)
                 .orElseThrow(() -> new EntityNotFoundException("Student answer non of questions!"));
 
-        Double maxScoreOfQuestion = questionExam.getQuestionScore();
+        Double maxScoreOfQuestion = examQuestion.getQuestionScore();
         if (maxScoreOfQuestion == null) {
-            maxScoreOfQuestion = questionExam.getQuestion().getDefaultScore();
+            maxScoreOfQuestion = examQuestion.getQuestion().getDefaultScore();
         }
 
         if (answer instanceof DescriptiveAnswer) {
@@ -105,13 +105,13 @@ public class GradingServiceImpl implements GradingService {
         Student student = studentRepository.findById(studentId)
                 .orElseThrow(() -> new EntityNotFoundException("Student with this id not found: " + studentId));
 
-        List<QuestionExam> questionExams = questionExamRepository.findByExam(exam);
+        List<ExamQuestion> examQuestions = examQuestionRepository.findByExam(exam);
         Map<Long, Double> answerGrades = new HashMap<>();
 
-        for (QuestionExam questionExam : questionExams) {
-            Long questionId = questionExam.getQuestion().getId();
+        for (ExamQuestion examQuestion : examQuestions) {
+            Long questionId = examQuestion.getQuestion().getId();
 
-            Optional<Answer> answerOpt = answerRepository.findByQuestionExamAndStudent(questionExam, student);
+            Optional<Answer> answerOpt = answerRepository.findByExamQuestionAndStudent(examQuestion, student);
 
             answerGrades.put(questionId, answerOpt.map(Answer::getScore).orElse(0.0));
         }
@@ -126,12 +126,12 @@ public class GradingServiceImpl implements GradingService {
         Question question = questionRepository.findById(questionId)
                 .orElseThrow(() -> new EntityNotFoundException("Question with this id not found: " + questionId));
 
-        QuestionExam questionExam = questionExamRepository.findByExamAndQuestion(exam, question)
+        ExamQuestion examQuestion = examQuestionRepository.findByExamAndQuestion(exam, question)
                 .orElseThrow(() -> new QuestionNotFoundInExamException("Not question added for this exam!"));
 
-        Double maxScoreOfQuestion = questionExam.getQuestionScore();
+        Double maxScoreOfQuestion = examQuestion.getQuestionScore();
         if (maxScoreOfQuestion == null) {
-            maxScoreOfQuestion = questionExam.getQuestion().getDefaultScore();
+            maxScoreOfQuestion = examQuestion.getQuestion().getDefaultScore();
         }
         return maxScoreOfQuestion;
     }
@@ -146,12 +146,12 @@ public class GradingServiceImpl implements GradingService {
         Exam exam = examRepository.findById(examId)
                 .orElseThrow(() -> new EntityNotFoundException("Exam with this id not found: " + examId));
 
-        List<QuestionExam> questionExams = questionExamRepository.findByExam(exam);
+        List<ExamQuestion> examQuestions = examQuestionRepository.findByExam(exam);
 
         double totalStudentScoreForExam = 0.0;
 
-        for (QuestionExam questionExam : questionExams) {
-            List<Answer> answers = answerRepository.findByStudentAndQuestionExam(student, questionExam);
+        for (ExamQuestion examQuestion : examQuestions) {
+            List<Answer> answers = answerRepository.findByStudentAndExamQuestion(student, examQuestion);
             for (Answer answer : answers) {
                 totalStudentScoreForExam += answer.getScore();
             }

@@ -23,7 +23,6 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/master")
 public class MasterController {
     private final MasterService masterService;
-    private final CourseService courseService;
     private final StudentExamService studentExamService;
     private final StudentService studentService;
     private final QuestionService questionService;
@@ -31,9 +30,8 @@ public class MasterController {
     private final ExamService examService;
     private final GradingService gradingService;
 
-    public MasterController(MasterService masterService, CourseService courseService, StudentExamService studentExamService, StudentService studentService, QuestionService questionService, AnswerService answerService, ExamService examService, GradingService gradingService) {
+    public MasterController(MasterService masterService, StudentExamService studentExamService, StudentService studentService, QuestionService questionService, AnswerService answerService, ExamService examService, GradingService gradingService) {
         this.masterService = masterService;
-        this.courseService = courseService;
         this.studentExamService = studentExamService;
         this.studentService = studentService;
 
@@ -100,10 +98,10 @@ public class MasterController {
             @PathVariable Long examId) {
 
         Student student = studentService.findById(studentId);
-        List<QuestionExam> questionExams = questionService.findQuestionExamByExam(examId);
+        List<ExamQuestion> examQuestions = questionService.findQuestionExamByExam(examId);
 
-        List<Question> questions = questionExams.stream()
-                .map(QuestionExam::getQuestion)
+        List<Question> questions = examQuestions.stream()
+                .map(ExamQuestion::getQuestion)
                 .collect(Collectors.toList());
         for (Question question : questions) {
             if (question instanceof MultipleChoiceQuestion) {

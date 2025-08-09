@@ -19,18 +19,18 @@ public class AnswerServiceImpl implements AnswerService {
     private final AnswerRepository answerRepository;
     private final DescriptiveAnswerRepository descriptiveAnswerRepository;
     private final StudentRepository studentRepository;
-    private final QuestionExamRepository questionExamRepository;
+    private final ExamQuestionRepository examQuestionRepository;
     private final QuestionRepository questionRepository;
     private final ExamRepository examRepository;
     private final OptionRepository optionRepository;
 
     public AnswerServiceImpl(MultipleChoiceAnswerRepository multipleChoiceAnswerRepository, AnswerRepository answerRepository, DescriptiveAnswerRepository descriptiveAnswerRepository,
-                             StudentRepository studentRepository, QuestionExamRepository questionExamRepository, QuestionRepository questionRepository,
+                             StudentRepository studentRepository, ExamQuestionRepository examQuestionRepository, QuestionRepository questionRepository,
                              ExamRepository examRepository, OptionRepository optionRepository) {
         this.multipleChoiceAnswerRepository = multipleChoiceAnswerRepository;
         this.answerRepository = answerRepository;
         this.descriptiveAnswerRepository = descriptiveAnswerRepository;
-        this.questionExamRepository = questionExamRepository;
+        this.examQuestionRepository = examQuestionRepository;
         this.questionRepository = questionRepository;
         this.studentRepository = studentRepository;
         this.optionRepository = optionRepository;
@@ -49,7 +49,7 @@ public class AnswerServiceImpl implements AnswerService {
         Exam exam = examRepository.findById(dto.getExamId())
                 .orElseThrow(() -> new EntityNotFoundException("Question with this id not found: " + dto.getExamId()));
 
-        QuestionExam questionExam = questionExamRepository.findByExamAndQuestion(exam, question)
+        ExamQuestion examQuestion = examQuestionRepository.findByExamAndQuestion(exam, question)
                 .orElseThrow(() -> new QuestionNotFoundInExamException("Not question added for this exam: " + dto.getExamId()));
 
         Option selectedOption = optionRepository.findById(dto.getSelectedOptionId())
@@ -57,7 +57,7 @@ public class AnswerServiceImpl implements AnswerService {
 
         MultipleChoiceAnswer multipleChoiceAnswer = MultipleChoiceAnswer.builder()
                 .option(selectedOption)
-                .questionExam(questionExam)
+                .examQuestion(examQuestion)
                 .student(student)
                 .build();
 
@@ -75,13 +75,13 @@ public class AnswerServiceImpl implements AnswerService {
         Exam exam = examRepository.findById(dto.getExamId())
                 .orElseThrow(() -> new EntityNotFoundException("Question with this id not found: " + dto.getExamId()));
 
-        QuestionExam questionExam = questionExamRepository.findByExamAndQuestion(exam, question)
+        ExamQuestion examQuestion = examQuestionRepository.findByExamAndQuestion(exam, question)
                 .orElseThrow(() -> new QuestionNotFoundInExamException("Not question added for this exam!"));
 
 
         DescriptiveAnswer descriptiveAnswer = DescriptiveAnswer.builder()
                 .answerText(dto.getAnswer())
-                .questionExam(questionExam)
+                .examQuestion(examQuestion)
                 .student(student)
                 .build();
 
@@ -97,17 +97,17 @@ public class AnswerServiceImpl implements AnswerService {
         Exam exam = examRepository.findById(examId)
                 .orElseThrow(() -> new EntityNotFoundException("Exam with this id not found: " + examId));
 
-        List<QuestionExam> questionExams = questionExamRepository.findByExam(exam);
+        List<ExamQuestion> examQuestions = examQuestionRepository.findByExam(exam);
 
-        for (QuestionExam questionExam : questionExams) {
-            Question question = questionExam.getQuestion();
+        for (ExamQuestion examQuestion : examQuestions) {
+            Question question = examQuestion.getQuestion();
 
-            List<MultipleChoiceAnswer> mcAnswers = multipleChoiceAnswerRepository.findByStudentAndQuestionExam(student, questionExam);
+            List<MultipleChoiceAnswer> mcAnswers = multipleChoiceAnswerRepository.findByStudentAndExamQuestion(student, examQuestion);
             for (MultipleChoiceAnswer answer : mcAnswers) {
                 answers.put(question.getId(), answer.getOption());
             }
 
-            List<DescriptiveAnswer> descAnswers = descriptiveAnswerRepository.findByStudentAndQuestionExam(student, questionExam);
+            List<DescriptiveAnswer> descAnswers = descriptiveAnswerRepository.findByStudentAndExamQuestion(student, examQuestion);
             for (DescriptiveAnswer answer : descAnswers) {
                 answers.put(question.getId(), answer.getAnswerText());
             }
